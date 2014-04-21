@@ -39,6 +39,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+
 import javax.script.ScriptException;
 
 import com.oracle.avatar.js.dns.DNS;
@@ -206,7 +207,7 @@ public final class EventLoop {
     }
 
     private void processEvent(final String name, final Callback callback,
-            final AccessControlContext context, final Object... args) throws Exception {
+                              final AccessControlContext context, final Object... args) throws Exception {
         assert Thread.currentThread() == mainThread : "called from non-event thread " + Thread.currentThread().getName();
         assert callback != null : "callback is null for event " + name;
         try {
@@ -286,8 +287,8 @@ public final class EventLoop {
         }
 
         if (!handled && domain == null) {
-           // No domain and no uncaughtException Handler registered
-           // rethrowing
+            // No domain and no uncaughtException Handler registered
+            // rethrowing
             return false;
         }
 
@@ -378,14 +379,14 @@ public final class EventLoop {
     @Override
     public String toString() {
         return "EventLoop." + instanceNumber + " " + "}, runtime: {" +
-               "executor: " + executor + ", " +
-               "hooks: " + hooks.get() + ", " +
-               "events: " + eventQueue.size() + ", " +
-               "tasks: " + executor.queuedTasksCount() + ", " +
-               "activeThreads: " + executor.getActiveCount() + ", " +
-               "threads: " + executor.getPoolSize() + ", " +
-               "pending: " + eventQueue.size() +
-               "}}";
+                "executor: " + executor + ", " +
+                "hooks: " + hooks.get() + ", " +
+                "events: " + eventQueue.size() + ", " +
+                "tasks: " + executor.queuedTasksCount() + ", " +
+                "activeThreads: " + executor.getActiveCount() + ", " +
+                "threads: " + executor.getPoolSize() + ", " +
+                "pending: " + eventQueue.size() +
+                "}}";
     }
 
     public boolean isMainThread() {
@@ -408,46 +409,43 @@ public final class EventLoop {
 
         final LoopCallbackHandler defaultHandler = new LoopCallbackHandler(this);
 
-        if (handleFactory == null) {
-            this.handleFactory = new DefaultHandleFactory(
-                    new CallbackExceptionHandler() {
-                        @Override
-                        public void handle(final Throwable ex) {
-                            if (!handleCallbackException(ex)) {
-                                if (pendingException == null) {
-                                    pendingException = ex;
-                                } else {
-                                    pendingException.addSuppressed(ex);
-                                }
-                                // interrupt uvLoop.run() so that pending exception can be thrown synchronously
-                                interruptMainLoopHandle.send();
+        this.uvLoop = new LoopHandle(
+                new CallbackExceptionHandler() {
+                    @Override
+                    public void handle(final Throwable ex) {
+                        if (!handleCallbackException(ex)) {
+                            if (pendingException == null) {
+                                pendingException = ex;
+                            } else {
+                                pendingException.addSuppressed(ex);
                             }
-                        }
-                    },
-
-                    new CallbackHandlerFactory() {
-                        @Override
-                        public CallbackHandler newCallbackHandler(Object context) {
-                            return new LoopCallbackHandler(EventLoop.this, context);
-                        }
-
-                        @Override
-                        public CallbackHandler newCallbackHandler() {
-                            return defaultHandler;
-                        }
-                    },
-
-                    new ContextProvider() {
-                        @Override
-                        public Object getContext() {
-                            return EventLoop.this.getDomain();
+                            // interrupt uvLoop.run() so that pending exception can be thrown synchronously
+                            interruptMainLoopHandle.send();
                         }
                     }
-            );
-        } else {
-            this.handleFactory = new DefaultHandleFactory();
-        }
-        this.uvLoop = this.handleFactory.getLoopHandle();
+                },
+
+                new CallbackHandlerFactory() {
+                    @Override
+                    public CallbackHandler newCallbackHandler(Object context) {
+                        return new LoopCallbackHandler(EventLoop.this, context);
+                    }
+
+                    @Override
+                    public CallbackHandler newCallbackHandler() {
+                        return defaultHandler;
+                    }
+                },
+
+                new ContextProvider() {
+                    @Override
+                    public Object getContext() {
+                        return EventLoop.this.getDomain();
+                    }
+                }
+        );
+
+        this.handleFactory = (handleFactory == null ? new DefaultHandleFactory() : handleFactory).initialize(uvLoop);
 
         this.instanceNumber = instanceNumber;
         this.executor = executor;
@@ -539,7 +537,7 @@ public final class EventLoop {
 
     public void enterDomain(ScriptObjectMirror domain) {
         assert Thread.currentThread() == mainThread : "called from non-event thread " + Thread.currentThread().getName();
-         domain.callMember("enter");
+        domain.callMember("enter");
     }
 
     public void exitDomain(ScriptObjectMirror domain) {

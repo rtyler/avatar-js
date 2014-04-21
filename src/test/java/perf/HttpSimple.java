@@ -45,18 +45,19 @@
 
 package perf;
 
-import java.lang.Throwable;
 import java.nio.ByteBuffer;
+
 import com.oracle.httpparser.HttpParser;
 import com.oracle.httpparser.HttpParserSettings;
 import com.oracle.libuv.LibUV;
 import com.oracle.libuv.cb.StreamCloseCallback;
 import com.oracle.libuv.cb.StreamConnectionCallback;
 import com.oracle.libuv.cb.StreamReadCallback;
-import com.oracle.libuv.handles.DefaultHandleFactory;
 import com.oracle.libuv.handles.HandleFactory;
 import com.oracle.libuv.handles.LoopHandle;
 import com.oracle.libuv.handles.TCPHandle;
+
+import static com.oracle.libuv.handles.DefaultHandleFactory.newFactory;
 
 /* Java based benchmark similar to benchmark/http_simple.js
  * call it with ab -c 100 -n 10000  http://127.0.0.1:8000/buffer/{buff size}
@@ -72,7 +73,7 @@ public class HttpSimple {
 
     public static void main(String[] args) throws Throwable {
         LibUV.cwd();
-        final HandleFactory factory = new DefaultHandleFactory();
+        final HandleFactory factory = newFactory();
         final LoopHandle loop = factory.getLoopHandle();
         final TCPHandle server = factory.newTCPHandle();
         final String CRLF = "\r\n";

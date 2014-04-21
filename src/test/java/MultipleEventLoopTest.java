@@ -33,12 +33,16 @@ import org.testng.annotations.Test;
 import com.oracle.avatar.js.eventloop.EventLoop;
 import com.oracle.avatar.js.eventloop.ThreadPool;
 import com.oracle.avatar.js.log.Logging;
+import com.oracle.libuv.LibUV;
 import com.oracle.libuv.cb.AsyncCallback;
 import com.oracle.libuv.handles.AsyncHandle;
-import com.oracle.libuv.handles.DefaultHandleFactory;
 import com.oracle.libuv.handles.HandleFactory;
 
 public class MultipleEventLoopTest {
+    static {
+        // call an idempotent LibUV method just to ensure that the native lib is loaded
+        LibUV.cwd();
+    }
 
     @Test
     public void testSubmit() throws Throwable {
@@ -67,7 +71,6 @@ public class MultipleEventLoopTest {
             threads[i] = new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    final HandleFactory factory = new DefaultHandleFactory();
                     try {
                         final EventLoop loop = loops[fi] = new EventLoop(
                                 properties.getProperty("source.compatible.version"),
@@ -76,8 +79,8 @@ public class MultipleEventLoopTest {
                                 System.getProperty("user.dir"),
                                 fi,
                                 ThreadPool.newInstance(1, 1, 1, Integer.MAX_VALUE, false),
-                                factory);
-
+                                null);
+                        final HandleFactory factory = loop.handleFactory();
                         final AsyncHandle async = asyncHandles[fi] = factory.newAsyncHandle();
                         async.setAsyncCallback(new AsyncCallback() {
                             @Override
