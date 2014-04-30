@@ -370,6 +370,7 @@
         <apply-diff src="test/simple" mod="${test.dir}/crypto" name="test-crypto-stream.js"/>
         <!-- benchmark -->
         <apply-diff src="benchmark" mod="${benchmark.dir}" name="common.js"/>
+        <apply-diff src="benchmark" mod="${benchmark.dir}" name="http_simple.js"/>
         <!-- pummel -->
         <apply-diff src="test/pummel" mod="${test.dir}/crypto" name="test-crypto-dh.js"/>
         <apply-diff src="test/pummel" mod="${test.dir}/pummel" name="test-dh-regr.js"/>
@@ -474,6 +475,7 @@
         <apply-patch-file target="${test.dir}/crypto" dir="test/crypto" name="test-crypto-stream.js"/>
         <!-- benchmark -->
         <apply-patch-file target="${benchmark.dir}" dir="benchmark" name="common.js"/>
+        <apply-patch-file target="${benchmark.dir}" dir="benchmark" name="http_simple.js"/>
         <!-- pummel -->
         <apply-patch-file target="${test.dir}/pummel" dir="test/crypto" name="test-crypto-dh.js"/>
         <apply-patch-file target="${test.dir}/pummel" dir="test/pummel" name="test-dh-regr.js"/>

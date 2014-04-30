@@ -1,0 +1,11 @@
+--- /home/akhil/ws/node/benchmark/http_simple.js	2013-08-08 17:10:54.026705328 -0700
++++ /home/akhil/ws/avatar-js/benchmark/http_simple.js	2014-04-30 15:38:48.461377326 -0700
+@@ -111,7 +111,7 @@
+   while (s.length < size) {
+     s += c;
+   }
+-  return s;
++  return s.toString(); // ensure nashorn cons strings are flattened
+ }
+ 
+ server.listen(port, function () {
