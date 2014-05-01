@@ -255,11 +255,23 @@
     }
 
     Pipe.prototype._writeString = function(string, encoding) {
-        return this.writeBuffer(new JavaBuffer(string, encoding));
+        return JavaBuffer.hasMultiByte(string, encoding) ?
+            this.writeBuffer(new JavaBuffer(string, encoding)) :
+            this._writeStringLowerBytes(string);
+    }
+
+    Pipe.prototype._writeStringLowerBytes = function(string) {
+        // optimization - bypass the utf encoder if str does not have any multi-byte chars
+        // in this case string.length == Buffer.byteLength(string, encoding)
+        // only the lower byte of each char in input string is written
+        var wrapper = {bytes: string.length};
+        this._writeWrappers.push(wrapper);
+        this._pipe.writeLowerBytes(string);
+        return wrapper;
     }
 
     Pipe.prototype.writeAsciiString = function(data) {
-        return this._writeString(data, 'ascii');
+        return this._writeStringLowerBytes(data);
     }
 
     Pipe.prototype.writeUcs2String = function(data) {

@@ -218,12 +218,26 @@
         return this.writeBuffer(new JavaBuffer(string, encoding));
     }
 
+    TCP.prototype._writeStringLowerBytes = function(string) {
+        // optimization - bypass the utf encoder if str does not have any multi-byte chars
+        // in this case string.length == Buffer.byteLength(string, encoding)
+        // only the lower byte of each char in input string is written
+        var wrapper = {bytes: string.length};
+        this._writeWrappers.push(wrapper);
+        Object.defineProperty(wrapper, '_socketHandle', { value: this.owner });
+        this._connection.writeLowerBytes(string);
+        return wrapper;
+    }
+
     TCP.prototype.writeUtf8String = function(string) {
-        return this._writeString(string, 'utf8');
+        var encoding = 'utf8';
+        return JavaBuffer.hasMultiByte(string, encoding) ?
+            this._writeString(string, encoding) :
+            this._writeStringLowerBytes(string);
     }
 
     TCP.prototype.writeAsciiString = function(data) {
-        return this._writeString(data, 'ascii');
+        return this._writeStringLowerBytes(data);
     }
 
     TCP.prototype.writeUcs2String = function(data) {
