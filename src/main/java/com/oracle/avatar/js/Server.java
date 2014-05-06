@@ -44,7 +44,6 @@ import javax.script.CompiledScript;
 import javax.script.Invocable;
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
 import com.oracle.avatar.js.eventloop.Callback;
@@ -57,6 +56,7 @@ import com.oracle.libuv.cb.AsyncCallback;
 import com.oracle.libuv.handles.AsyncHandle;
 import com.oracle.libuv.handles.HandleFactory;
 
+import jdk.nashorn.api.scripting.NashornScriptEngineFactory;
 import jdk.nashorn.api.scripting.URLReader;
 
 /**
@@ -86,8 +86,7 @@ public final class Server implements AutoCloseable {
             new FinalScriptRunner()
     };
 
-    private static final String ENGINE_NAME = System.getProperty("avatar.scriptEngine", "nashorn");
-    private static final ScriptEngineManager MANAGER = new ScriptEngineManager();
+    private static final NashornScriptEngineFactory ENGINE_FACTORY = new NashornScriptEngineFactory();
 
     private static final String LOG_OUTPUT_DIR = "avatar-js.log.output.dir";
     private static final String VERSION_BUILD_PROPERTY = "avatar-js.source.compatible.version";
@@ -451,7 +450,17 @@ public final class Server implements AutoCloseable {
 
     public static ScriptEngine newEngine() {
         checkPermission();
-        return MANAGER.getEngineByName(ENGINE_NAME);
+        final String[] options = new String[] {
+                "--const-as-var"
+        };
+        try {
+            return ENGINE_FACTORY.getScriptEngine(options);
+        } catch (IllegalArgumentException iae) {
+            // fallback to default if any of the specified options are not supported
+            // this happens for example when running on an earlier release
+            // --const-as-var was available starting in jdk 8u20
+            return ENGINE_FACTORY.getScriptEngine();
+        }
     }
 
     public static CompiledScript compile(final ScriptEngine engine, final String script) throws ScriptException {
