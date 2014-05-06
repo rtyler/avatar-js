@@ -38,6 +38,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
+import com.oracle.avatar.js.Server;
+
 public class TestRunner {
 
     private static boolean secure = false;
@@ -48,6 +50,7 @@ public class TestRunner {
     private static boolean deprecations = false;
     private static boolean redirect = true;
     private static boolean colorize = true;
+    private static boolean fork = true;
 
     private static final PrintStream err = System.err;
     private static final String pwd = System.getProperty("user.dir");
@@ -67,16 +70,16 @@ public class TestRunner {
     private static String reset;
 
     private static List<String> exclusions;
-    private static String results;
 
     private static int testsRun = 0;
     private static int testsToRun = 0;
     private static int testsFailed = 0;
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) throws Throwable {
         if (args.length < 1) {
             err.print("Usage: [options] <args>\n");
             err.print(" where options may be\n");
+            err.print("  -nofork to run each test in the same jvm (disabled by default)\n");
             err.print("  -nocolor to disable colorized output (for non-interactive runs)\n");
             err.print("  -noassert to disable assertions (enabled by default)\n");
             err.print("  -deprecation to throw on deprecations (disabled by default)\n");
@@ -112,6 +115,7 @@ public class TestRunner {
             final String root = args[i];
             if (root.matches("^-\\w*")) {
                 switch (root) {
+                    case "-nofork": fork = false; break;
                     case "-noassert": assertions = false; break;
                     case "-deprecation": deprecations = true; break;
                     case "-nocolor": colorize = false; break;
@@ -158,7 +162,7 @@ public class TestRunner {
         Paths.get(pwd, "test", "tmp").toFile().mkdirs();
         final String target = Paths.get(pwd, "dist").toString();
         final String jar = Paths.get(target, "avatar-js.jar").toString();
-        results = Paths.get(pwd, "test-output").toString();
+        final String results = Paths.get(pwd, "test-output").toString();
         Paths.get(results).toFile().mkdirs();
 
         testsRun = 0;
@@ -184,7 +188,16 @@ public class TestRunner {
 
         final long totalStart = System.currentTimeMillis();
         while (testNames.size() > 0) {
-            runNextTest();
+            final String testName = testNames.remove(0);
+            err.print(++testsRun + "/" + testsToRun + " " + testName + " ... ");
+            if (fork) {
+                final String outputDir = Paths.get(results, testName).toString().replaceAll("\\.js$", "");
+                final Path outputDirPath = Paths.get(outputDir);
+                outputDirPath.toFile().mkdirs();
+                forkNextTest(testName, outputDir);
+            } else {
+                runNextTest(testName, results);
+            }
             Thread.sleep(delay);
         }
 
@@ -203,14 +216,26 @@ public class TestRunner {
         System.exit(testsFailed);
     }
 
-    private static void runNextTest() throws IOException {
-        final String testName = testNames.remove(0);
-        err.print(++testsRun + "/" + testsToRun + " " + testName + " ... ");
+    private static void runNextTest(final String testName,
+                                    final String outputDir) throws Throwable {
+        err.print("\n");
+        System.setProperty("avatar-js.log.output.dir=", outputDir);
+        final Server server = new Server();
+        final long start = System.currentTimeMillis();
+        try {
+            server.run(testName);
+            err.print(testName + " " + ((System.currentTimeMillis() - start) / 1000) + "s ");
+            err.print(bold + green + "OK");
+        } catch (Throwable throwable) {
+            err.print(testName + " " + ((System.currentTimeMillis() - start) / 1000) + "s ");
+            err.print(bold + red + "FAILED");
+            testsFailed++;
+            failedTests.add(testName);
+        }
+        err.print(reset + "\n\n");
+    }
 
-        final String outputDir = Paths.get(results, testName).toString().replaceAll("\\.js$", "");
-        final Path outputDirPath = Paths.get(outputDir);
-        outputDirPath.toFile().mkdirs();
-
+    private static void forkNextTest(final String testName, final String outputDir) throws IOException {
         final List<String> spawnArgs = new ArrayList<>();
         spawnArgs.add("java");
         spawnArgs.addAll(jvmArgs);
