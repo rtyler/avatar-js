@@ -1,5 +1,5 @@
---- ../node/lib/repl.js	2013-12-16 17:07:31.000000000 +0100
-+++ src/main/js/lib/repl.js	2014-01-13 18:56:58.000000000 +0100
+--- ../node/lib/repl.js	2013-12-06 16:10:13.427409262 -0800
++++ src/main/js/lib/repl.js	2014-05-05 23:23:23.473717346 -0700
 @@ -236,6 +236,8 @@
  
        // First we attempt to eval as expression with parens.
@@ -19,16 +19,14 @@
  
      } else {
        finish(null);
-@@ -565,7 +570,20 @@
+@@ -565,7 +570,18 @@
  
            if (obj != null) {
              if (typeof obj === 'object' || typeof obj === 'function') {
 +              try {
                memberGroups.push(Object.getOwnPropertyNames(obj));
 +              } catch(err) {
-+                if (typeof(obj.__proto__) === 'undefined' &&
-+                   (typeof(obj) == 'object' || typeof(obj) == 'function') &&
-+                   !(obj instanceof Object)) { // Completion on java
++                if (util.isJavaObject(obj)) { // run completion on java class methods
 +                    var arr = obj.class.getMethods()
 +                    var methods = [];
 +                    for (var m in arr) {
@@ -40,7 +38,7 @@
              }
              // works for non-objects
              try {
-@@ -923,5 +941,5 @@
+@@ -923,5 +939,5 @@
        // "strict mode" syntax errors
        !e.match(/^SyntaxError: .*strict mode.*/i) &&
        // JSON.parse() error
