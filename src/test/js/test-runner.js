@@ -85,7 +85,7 @@ for (var i=0; i < testlen; i++) {
     if (root.match('^-\w*')) {
         switch (root) {
             case '-noassert': assertions = false; break;
-            case '-deprecation': deprecation = true; break;
+            case '-deprecation': deprecations = true; break;
             case '-nocolor': colorize = false; break;
             case '-noredirect': redirect = false; break;
             case '-secure': secure = true; break;

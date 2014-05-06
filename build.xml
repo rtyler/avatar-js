@@ -565,4 +565,21 @@
         <zip  basedir="${dist.dir}/" includes="${product.name}/**"
              destfile="${dist.dir}/${package.name}.zip"/>
     </target>
+
+    <target name="test-simple" depends="compile-tests">
+        <java classname="runner.TestRunner" failonerror="true" fork="true" dir=".">
+            <classpath>
+                <path location="${classes.dir}"/>
+                <path location="${test.classes.dir}"/>
+                <path refid="javac.test.classpath.id"/>
+            </classpath>
+            <jvmarg value="-Xverify:all"/>
+            <jvmarg value="-Xcheck:jni"/>
+            <jvmarg value="-Xmx1g"/>
+            <jvmarg value="-ea"/>
+            <sysproperty key="java.library.path" value="${dist.dir}"/>
+            <arg line="test/simple"/>
+        </java>
+    </target>
+
 </project>
