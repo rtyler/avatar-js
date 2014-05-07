@@ -28,14 +28,18 @@ package runner;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.PathMatcher;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import com.oracle.avatar.js.Server;
@@ -70,6 +74,15 @@ public class TestRunner {
     private static String reset;
 
     private static List<String> exclusions;
+    private static List<Pattern> exclusionPatterns;
+
+    private static String[] noforkExclusions = {
+            "test-child-process-fork-and-spawn.js"
+    };
+
+    private static String[] exclusionExpressions = {
+            "^test\\-cluster\\-.+.js$"
+    };
 
     private static int testsRun = 0;
     private static int testsToRun = 0;
@@ -93,7 +106,7 @@ public class TestRunner {
             System.exit(-1);
         }
 
-        final Path exclusionsFile = Paths.get(platform(), "-test-exclusions.txt");
+        final Path exclusionsFile = Paths.get(pwd, platform() + "-test-exclusions.txt");
         if (exclusionsFile.toFile().exists()) {
             exclusions = Arrays.asList(new String(Files.readAllBytes(exclusionsFile), "utf-8")
                     .split("\n"))
@@ -105,12 +118,13 @@ public class TestRunner {
                         } else {
                             return e.trim();
                         }
-            }).collect(Collectors.toList());
+                    })
+                    .collect(Collectors.toList());
         } else {
             exclusions = new ArrayList<>(); // empty
         }
 
-        err.println("\n");
+        final List<String> paths = new ArrayList<>();
         for (int i=0; i < args.length; i++) {
             final String root = args[i];
             if (root.matches("^-\\w*")) {
@@ -126,29 +140,40 @@ public class TestRunner {
                     case "-timeout": timeout = Long.parseLong(args[++i]) * 1000; break;
                     default: jvmArgs.add(root);
                 }
-                continue;
+            } else {
+                paths.add(root);
             }
+        }
 
+        exclusionPatterns = new ArrayList<>(exclusionExpressions.length);
+        if (!fork) {
+            exclusions.addAll(Arrays.asList(noforkExclusions));
+            for (String pattern : exclusionExpressions) {
+                exclusionPatterns.add(Pattern.compile(pattern));
+            }
+        }
+
+        for (final String root : paths) {
             final Path rootPath = Paths.get(root);
             final File stats = rootPath.toFile();
             if (stats.isDirectory()) {
-                Files.list(rootPath)
+                scanDir(rootPath);
+            } else if (stats.isFile()) {
+                scanFile(root, rootPath);
+            } else {
+                final int names = rootPath.getNameCount();
+                final String basePath = rootPath.getName(names - 1).toString();
+                final PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:" + basePath);
+                final Path directory = rootPath.subpath(0, names - 1);
+                Files.list(directory)
                         .filter(f -> f.toString().matches(".+test-.+\\.js$"))
                         .sorted()
                         .forEach(f -> {
-                            if (exclusions.contains(f.toString())) {
-                                err.print("excluding " + f + "\n");
-                            } else {
+                            final Path fp = f.getName(f.getNameCount() - 1);
+                            if (matcher.matches(fp)) {
                                 testNames.add(f.toString());
                             }
                         });
-            } else if (stats.isFile()) {
-                final String f = rootPath.getName(rootPath.getNameCount() - 1).toString(); // the last component, basename
-                if (exclusions.contains(f)) {
-                    err.print("excluding " + f + "\n");
-                } else {
-                    testNames.add(root);
-                }
             }
         }
 
@@ -280,8 +305,44 @@ public class TestRunner {
         err.print(reset + "\n");
     }
 
+    private static void scanFile(String root, Path rootPath) {
+        final String baseName = rootPath.getName(rootPath.getNameCount() - 1).toString();
+        if (exclusions.contains(baseName)) {
+            err.print("excluding " + baseName + "\n");
+        } else {
+            testNames.add(root);
+        }
+    }
+
+    private static void scanDir(final Path rootPath) throws IOException {
+        Files.list(rootPath)
+                .filter(f -> f.toString().matches(".+test-.+\\.js$"))
+                .sorted()
+                .forEach(f -> {
+                    final String test = f.toString();
+                    final String basename = f.getName(f.getNameCount() - 1).toString();
+                    boolean excluded = false;
+                    if (exclusions.contains(basename)) {
+                        excluded = true;
+                    } else if (!fork) {
+                        for (final Pattern p : exclusionPatterns) {
+                            final Matcher matcher = p.matcher(basename);
+                            if (matcher.matches()) {
+                                excluded = true;
+                                break;
+                            }
+                        }
+                    }
+                    if (excluded) {
+                        err.print("excluding " + test + "\n");
+                    } else {
+                        testNames.add(test);
+                    }
+                });
+    }
+
     private static String platform() {
-        String osname = System.getProperty("os.name").toLowerCase();
+        final String osname = System.getProperty("os.name").toLowerCase();
         if (osname.startsWith("windows")) {
             return "win32";
         } else {
