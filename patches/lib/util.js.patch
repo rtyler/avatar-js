@@ -7,7 +7,7 @@
 +var ScriptUtils = Java.type("jdk.nashorn.api.scripting.ScriptUtils");
 +exports.isJavaObject = function(obj) {
 +  // Java thing, can be a Dynalink function, a java instance, a java class
-+  return Java.isType(obj.class) && ScriptUtils.wrap(obj) === obj;
++  return Java.isType(obj.class) || ScriptUtils.wrap(obj) === obj;
 +}
  
  function formatValue(ctx, value, recurseTimes) {
