@@ -37,7 +37,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -48,7 +50,7 @@ public class TestRunner {
 
     private static boolean secure = false;
     private static long delay = 100;
-    private static long timeout = 120 * 1000;
+    private static long timeout = 60 * 1000;
     private static String maxheap = "1g";
     private static boolean assertions = true;
     private static boolean deprecations = false;
@@ -77,11 +79,13 @@ public class TestRunner {
     private static List<Pattern> exclusionPatterns;
 
     private static String[] noforkExclusions = {
-            "test-child-process-fork-and-spawn.js"
+            "test-child-process-fork-and-spawn.js",
+            "test-domain.js"
     };
 
-    private static String[] exclusionExpressions = {
-            "^test\\-cluster\\-.+.js$"
+    private static String[] noforkExclusionExpressions = {
+            "^test\\-cluster\\-.+.js$",
+            "test\\-domain\\-.+.js$"
     };
 
     private static int testsRun = 0;
@@ -99,7 +103,7 @@ public class TestRunner {
             err.print("  -noredirect to disable stdout/stderr redirection to files\n");
             err.print("  -secure to run tests with a security manager\n");
             err.print("  -delay ms to pause between each test to give the OS time to cleanup (default: 100)\n");
-            err.print("  -timeout s to specify the timeout for each test (default: 120s)\n");
+            err.print("  -timeout s to specify the timeout for each test (default: 60s)\n");
             err.print("  -mx N to specify the maximum jvm heap size for each test (default: 1g)\n");
             err.print(" <args> is some combination of node tests and/or directories\n");
             err.print("directories are searched for tests matching \"test-*.js\"\n");
@@ -145,11 +149,11 @@ public class TestRunner {
             }
         }
 
-        exclusionPatterns = new ArrayList<>(exclusionExpressions.length);
+        exclusionPatterns = new ArrayList<>(noforkExclusionExpressions.length);
         if (!fork) {
             exclusions.addAll(Arrays.asList(noforkExclusions));
-            for (String pattern : exclusionExpressions) {
-                exclusionPatterns.add(Pattern.compile(pattern));
+            for (final String expression : noforkExclusionExpressions) {
+                exclusionPatterns.add(Pattern.compile(expression));
             }
         }
 
@@ -223,6 +227,7 @@ public class TestRunner {
             } else {
                 runNextTest(testName, results);
             }
+            System.gc();
             Thread.sleep(delay);
         }
 
@@ -245,19 +250,42 @@ public class TestRunner {
                                     final String outputDir) throws Throwable {
         err.print("\n");
         System.setProperty("avatar-js.log.output.dir=", outputDir);
-        final Server server = new Server();
+        final AtomicReference<Throwable> failure = new AtomicReference<>();
+        final AtomicBoolean passed = new AtomicBoolean(false);
         final long start = System.currentTimeMillis();
-        try {
-            server.run(testName);
-            err.print(testName + " " + ((System.currentTimeMillis() - start) / 1000) + "s ");
-            err.print(bold + green + "OK");
-        } catch (Throwable throwable) {
-            err.print(testName + " " + ((System.currentTimeMillis() - start) / 1000) + "s ");
-            err.print(bold + red + "FAILED");
-            testsFailed++;
-            failedTests.add(testName);
+        final Thread runner = new Thread(() -> {
+            Server server = null;
+            try {
+                server = new Server();
+                server.run(testName);
+                passed.set(true);
+            } catch (Throwable throwable) {
+                passed.set(false);
+                failure.set(throwable);
+            } finally {
+                if (server != null) {
+                    server.close();
+                }
+            }
+        }, testName + " runner");
+        runner.start();
+        runner.join(timeout);
+        err.print(testName + " " + ((System.currentTimeMillis() - start) / 1000) + "s ");
+        if (passed.get()) {
+            err.println(bold + green + "OK" + reset);
+        } else {
+            if (failure.get() != null) {
+                err.println(bold + red + "FAILED" + reset);
+                testsFailed++;
+                failedTests.add(testName);
+                failure.get().printStackTrace();
+            } else {
+                err.println(bold + cyan + "TIMEOUT" + red + " FAILED" + reset);
+                testsFailed++;
+                failedTests.add(testName);
+            }
         }
-        err.print(reset + "\n\n");
+        err.print("\n");
     }
 
     private static void forkNextTest(final String testName, final String outputDir) throws IOException {
@@ -291,7 +319,7 @@ public class TestRunner {
         }
         err.print(((System.currentTimeMillis() - start) / 1000) + "s ");
         if (!completed) {
-            err.print(cyan + "TIMEOUT " + reset);
+            err.print(bold + cyan + "TIMEOUT " + reset);
             failed = true;
         }
         final int code = process.exitValue();
