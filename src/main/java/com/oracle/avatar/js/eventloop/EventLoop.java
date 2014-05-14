@@ -235,7 +235,7 @@ public final class EventLoop {
     public void stop() {
         if (stopped.compareAndSet(false, true)) {
             if (!executor.isShared()) {
-                executor.shutdown();
+                executor.shutdownNow();
             }
             checkHandle.close();
             refHandle.close();
