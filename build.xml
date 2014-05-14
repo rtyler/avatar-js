@@ -566,6 +566,19 @@
              destfile="${dist.dir}/${package.name}.zip"/>
     </target>
 
+    <target name="test-jar" depends="jar, compile-tests">
+        <property name="test.jar" value="${dist.dir}/${product.name}-test.jar"/>
+        <jar destfile="${test.jar}">
+            <fileset dir="${test.classes.dir}" includes="**/*.class"/>
+            <fileset dir="${test.classes.dir}" includes="**/*.js"/>
+            <zipgroupfileset dir="${dist.dir}" includes="${product.name}.jar"/>
+            <manifest>
+                <attribute name="Built-By" value="${user.name}"/>
+                <attribute name="Main-Class" value="runner.TestRunner"/>
+            </manifest>
+        </jar>
+    </target>
+
     <target name="test-simple" depends="compile-tests">
         <java classname="runner.TestRunner" failonerror="true" fork="true" dir=".">
             <classpath>
@@ -575,9 +588,10 @@
             </classpath>
             <jvmarg value="-Xverify:all"/>
             <jvmarg value="-Xcheck:jni"/>
-            <jvmarg value="-Xmx1g"/>
+            <jvmarg value="-Xmx4g"/>
             <jvmarg value="-ea"/>
             <sysproperty key="java.library.path" value="${dist.dir}"/>
+            <arg line="-nofork"/>
             <arg line="test/simple"/>
         </java>
     </target>
