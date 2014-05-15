@@ -405,7 +405,7 @@ Object.defineProperty(exports, '_tickCallback', {
     value: function() {
         // Permission is required to tick callbacks,
         // user code is not expected to call this method.
-        __avatar.eventloop.processQueuedEvents();
+        eventloop.processQueuedEvents();
     }
 });
 
@@ -428,7 +428,8 @@ exports.exit = function(status) {
 }
 
 exports.reallyExit = function(code) {
-    System.exit(code);
+    // System.exit is catastrophic in the embedded case
+    eventloop.stop();
 }
 
 Object.defineProperty(exports, 'memoryUsage', {
