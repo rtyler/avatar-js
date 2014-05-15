@@ -23,5 +23,4 @@
  * questions.
  */
 
-process._exiting = true;
 process.emit('exit', __avatar.exitCode);

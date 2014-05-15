@@ -1,6 +1,12 @@
---- ../nodejs/test/simple/test-cli-eval.js	2013-12-19 22:22:54.418398000 -0800
-+++ test/simple/test-cli-eval.js	2014-01-09 14:11:02.036472900 -0800
-@@ -28,7 +28,7 @@
+--- ../node/test/simple/test-cli-eval.js	2013-08-08 17:10:55.130705338 -0700
++++ test/simple/test-cli-eval.js	2014-05-15 13:43:00.005392560 -0700
+@@ -23,12 +23,13 @@
+   // signal we've been loaded as a module
+   console.log('Loaded as a module, exiting with status code 42.');
+   process.exit(42);
++  return; // process.exit in avatar does a graceful exit
+ }
+ 
  var common = require('../common.js'),
      assert = require('assert'),
      child = require('child_process'),

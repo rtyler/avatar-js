@@ -378,15 +378,14 @@ public final class EventLoop {
 
     @Override
     public String toString() {
-        return "EventLoop." + instanceNumber + " " + "}, runtime: {" +
+        return "EventLoop." + instanceNumber + " " +
                 "executor: " + executor + ", " +
                 "hooks: " + hooks.get() + ", " +
                 "events: " + eventQueue.size() + ", " +
                 "tasks: " + executor.queuedTasksCount() + ", " +
                 "activeThreads: " + executor.getActiveCount() + ", " +
                 "threads: " + executor.getPoolSize() + ", " +
-                "pending: " + eventQueue.size() +
-                "}}";
+                "pending: " + eventQueue.size();
     }
 
     public boolean isMainThread() {

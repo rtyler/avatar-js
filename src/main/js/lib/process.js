@@ -416,15 +416,10 @@ Object.defineProperty(exports, 'chdir', {
     }
 });
 
-Object.defineProperty(exports, '_exiting', { writable: true, value: false });
 exports.exit = function(status) {
     var code = status ? status : 0;
-    if (!exports._exiting) {
-        exports._exiting = true;
-        exports.emit('exit', code);
-    }
-    eventloop.stop();
     __avatar.setExitCode(code);
+    eventloop.interrupt();
 }
 
 Object.defineProperty(exports, 'memoryUsage', {
