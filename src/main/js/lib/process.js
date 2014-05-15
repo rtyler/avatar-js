@@ -423,13 +423,8 @@ exports.exit = function(status) {
         exports._exiting = true;
         exports.emit('exit', code);
     }
-    __avatar.eventloop.stop();
-    exports.reallyExit(code);
-}
-
-exports.reallyExit = function(code) {
-    // System.exit is catastrophic in the embedded case
     eventloop.stop();
+    __avatar.setExitCode(code);
 }
 
 Object.defineProperty(exports, 'memoryUsage', {

@@ -119,7 +119,9 @@ public final class Server implements AutoCloseable {
     }
 
     public static void main(final String... args) throws Throwable {
-        new Server().run(args);
+        final Server server = new Server();
+        server.run(args);
+        System.exit(server.holder.getExitCode());
     }
 
     public Server() throws Exception {
@@ -610,7 +612,7 @@ public final class Server implements AutoCloseable {
             return evalString;
         }
 
-        private void setExitCode(int exitCode) {
+        public void setExitCode(int exitCode) {
             this.exitCode = exitCode;
         }
 
