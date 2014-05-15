@@ -80,7 +80,9 @@ public class TestRunner {
 
     private static String[] noforkExclusions = {
             "test-child-process-fork-and-spawn.js",
-            "test-domain.js"
+            "test-domain.js",
+            "test-http-exceptions.js",
+            "test-http-upgrade-server2.js"
     };
 
     private static String[] noforkExclusionExpressions = {
