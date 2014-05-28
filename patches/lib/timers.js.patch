@@ -1,0 +1,15 @@
+--- ../node/lib/timers.js	2013-09-09 09:17:34.999854126 -0700
++++ src/main/js/lib/timers.js	2014-05-22 18:10:51.568306098 -0700
+@@ -427,6 +427,12 @@
+   if (!msecs || msecs < 0) return;
+   assert(msecs >= 0);
+ 
++  // nashorn perf optimization
++  // This helps the compiler know that the value is a number
++  // and that type knowledge then propagates to "var when" at line 458
++  // and then also to fast double comparison in "if (when < them)" in the loop
++  msecs = +msecs;
++
+   L.remove(item);
+ 
+   if (!unrefList) {
