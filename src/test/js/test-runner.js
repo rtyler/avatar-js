@@ -206,6 +206,7 @@ function runNextTest() {
         }
         stderr.write('\n');
         process.exit(testsFailed);
+        return;
     }
     var testName = testNames.shift();
     stderr.write(++testsRun + '/' + testsToRun + ' ' + testName + ' ... ');
