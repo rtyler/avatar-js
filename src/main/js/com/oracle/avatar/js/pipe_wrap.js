@@ -33,6 +33,7 @@
     var UDP = process.binding('udp_wrap').UDP;
 
     var JavaBuffer = Packages.com.oracle.avatar.js.buffer.Buffer;
+    var StringUtils = Packages.com.oracle.libuv.StringUtils;
     var PipeHandle = Packages.com.oracle.libuv.handles.PipeHandle;
     var TCPHandle = Packages.com.oracle.libuv.handles.TCPHandle;
     var UDPHandle = Packages.com.oracle.libuv.handles.UDPHandle;
@@ -255,7 +256,7 @@
     }
 
     Pipe.prototype._writeString = function(string, encoding) {
-        return JavaBuffer.hasMultiByte(string, encoding) ?
+        return StringUtils.hasMultiByte(string, encoding) ?
             this.writeBuffer(new JavaBuffer(string, encoding)) :
             this._writeStringLowerBytes(string);
     }

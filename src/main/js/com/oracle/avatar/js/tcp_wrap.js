@@ -29,7 +29,9 @@
     var events = require("events");
 
     var JavaBuffer = Packages.com.oracle.avatar.js.buffer.Buffer;
+    var StringUtils = Packages.com.oracle.libuv.StringUtils;
     var TCPHandle = Packages.com.oracle.libuv.handles.TCPHandle;
+    var ConsString = Packages.jdk.nashorn.internal.runtime.ConsString;
     var loop = __avatar.eventloop.loop();
     var factory = __avatar.eventloop.handleFactory();
 
@@ -209,7 +211,6 @@
         if (data._impl) data = data._impl; // unwrap if necessary
         var wrapper = {bytes: data.underlying().capacity()};
         this._writeWrappers.push(wrapper);
-        Object.defineProperty(wrapper, '_socketHandle', { value: this.owner });
         this._connection.write(data.underlying());
         return wrapper;
     }
@@ -224,14 +225,20 @@
         // only the lower byte of each char in input string is written
         var wrapper = {bytes: string.length};
         this._writeWrappers.push(wrapper);
-        Object.defineProperty(wrapper, '_socketHandle', { value: this.owner });
         this._connection.writeLowerBytes(string);
         return wrapper;
     }
 
     TCP.prototype.writeUtf8String = function(string) {
         var encoding = 'utf8';
-        return JavaBuffer.hasMultiByte(string, encoding) ?
+        if (string instanceof ConsString) {
+            var wrapper = {bytes: string.length()};
+            this._writeWrappers.push(wrapper);
+            this._connection.write(string, encoding);
+            return wrapper;
+        }
+
+        return StringUtils.hasMultiByte(string, encoding) ?
             this._writeString(string, encoding) :
             this._writeStringLowerBytes(string);
     }
@@ -284,7 +291,6 @@
 
     TCP.prototype.shutdown = function() {
         var wrapper = {};
-        Object.defineProperty(wrapper, '_socketHandle', { value: this.owner });
         Object.defineProperty(this, '_shutdownWrapper', { value: wrapper });
         this._connection.closeWrite();
         return wrapper;

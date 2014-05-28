@@ -594,43 +594,6 @@ public final class Buffer {
         return sb.toString();
     }
 
-    public static boolean hasMultiByte(final String str, final String encoding) {
-        switch (encoding) {
-            case "base64":
-            case "hex":
-            case "ucs2":
-            case "utf16":
-            case "utf16le":
-            case "utf16be":
-            case "utf32":
-            case "utf32le":
-            case "utf32be":
-            case "ucs-2":
-            case "utf-16":
-            case "utf-16le":
-            case "utf-16be":
-            case "utf-32":
-            case "utf32-le":
-            case "utf32-be":
-                return true;
-
-            case "utf8":
-            case "utf-8":
-                final int length = str.length();
-                for (int i=0; i < length; i++) {
-                    if (str.charAt(i) > 0x7f) { // https://en.wikipedia.org/wiki/UTF-8
-                        return true;
-                    }
-                }
-                break;
-
-            default:
-                return true; // assume unknown encoding is multi-byte - slow but safe
-        }
-        // ascii, raw, binary, iso-8859-1 are not multi-byte
-        return false;
-    }
-
     public static int byteLength(final String str, final String encoding) throws UnsupportedEncodingException {
         return Buffer.toBytes(str, encoding).length;
     }
