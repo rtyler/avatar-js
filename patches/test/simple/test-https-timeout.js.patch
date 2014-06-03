@@ -1,0 +1,27 @@
+--- ../node/test/simple/test-https-timeout.js	2013-08-08 17:10:55.234705339 -0700
++++ test/simple/test-https-timeout.js	2014-06-03 09:22:28.530884551 -0700
+@@ -46,7 +46,7 @@
+     method: 'GET',
+     rejectUnauthorized: false
+   });
+-  req.setTimeout(10);
++  req.setTimeout(100);
+   req.end();
+ 
+   req.on('response', function(res) {
+@@ -62,7 +62,7 @@
+ 
+     setTimeout(function() {
+       throw new Error('Did not get timeout event');
+-    }, 200);
++    }, 2000);
+   });
+ 
+   req.on('timeout', function() {
+@@ -70,5 +70,6 @@
+     req.destroy();
+     server.close();
+     process.exit(0);
++    java.lang.System.exit(0);
+   });
+ });

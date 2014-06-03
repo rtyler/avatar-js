@@ -323,6 +323,7 @@
         <apply-diff src="test/simple" mod="${test.dir}/simple" name="test-http-many-keep-alive-connections.js"/>
         <apply-diff src="test/simple" mod="${test.dir}/simple" name="test-http-pipeline-flood.js"/>
         <apply-diff src="test/simple" mod="${test.dir}/simple" name="test-https-strict.js"/>
+        <apply-diff src="test/simple" mod="${test.dir}/simple" name="test-https-timeout.js"/>
         <apply-diff src="test/simple" mod="${test.dir}/simple" name="test-module-loading.js"/>
         <apply-diff src="test/simple" mod="${test.dir}/simple" name="test-net-pingpong.js"/>
         <apply-diff src="test/simple" mod="${test.dir}/simple" name="test-net-GH-5504.js"/>
@@ -429,6 +430,7 @@
         <apply-patch-file target="${test.dir}/simple" dir="test/simple" name="test-http-many-keep-alive-connections.js"/>
         <apply-patch-file target="${test.dir}/simple" dir="test/simple" name="test-http-pipeline-flood.js"/>
         <apply-patch-file target="${test.dir}/simple" dir="test/simple" name="test-https-strict.js"/>
+        <apply-patch-file target="${test.dir}/simple" dir="test/simple" name="test-https-timeout.js"/>
         <apply-patch-file target="${test.dir}/simple" dir="test/simple" name="test-module-loading.js"/>
         <apply-patch-file target="${test.dir}/simple" dir="test/simple" name="test-net-GH-5504.js"/>
         <apply-patch-file target="${test.dir}/simple" dir="test/simple" name="test-net-pingpong.js"/>
