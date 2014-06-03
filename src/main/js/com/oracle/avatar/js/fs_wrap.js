@@ -605,12 +605,23 @@
     }
 
     var newError = function(exception) {
-        var error = new Error(exception.getErrnoMessage());
-        error.errno = exception.errno()
-        error.code = exception.errnoString();
-        error.message = exception.errnoString() + ', ' + exception.getErrnoMessage() + ' \'' + exception.path() +'\'';
-        error.path = exception.path();
-        process._errno = error.code;
+        var errno = exception.errno();
+        var errnoString = exception.errnoString();
+        var message = exception.getErrnoMessage();
+        var syscall = exception.syscall();
+        var path = exception.path();
+
+        var errorMessage =
+            errnoString + ', ' +
+            (syscall ? syscall : message) +
+            (path ? ' \'' + path +'\'' : '');
+
+        var error = new Error(errorMessage);
+        error.errno = errno;
+        error.code = errnoString;
+        if (path) error.path = path;
+
+        process._errno = errnoString;
         return error;
     }
 });
