@@ -1,23 +1,5 @@
---- ../node/test/simple/test-domain.js	2013-08-22 13:48:54.000000000 +0200
-+++ test/simple/test-domain.js	2013-12-04 14:07:46.000000000 +0100
-@@ -70,7 +70,7 @@
-       assert.equal(er.domainThrown, true);
-       break;
- 
--    case "ENOENT, open 'this file does not exist'":
-+    case "ENOENT, no such file or directory 'this file does not exist'":
-       assert.equal(er.domain, d);
-       assert.equal(er.domainThrown, false);
-       assert.equal(typeof er.domainBound, 'function');
-@@ -80,7 +80,7 @@
-       assert.equal(typeof er.errno, 'number');
-       break;
- 
--    case "ENOENT, open 'stream for nonexistent file'":
-+    case "ENOENT, no such file or directory 'stream for nonexistent file'":
-       assert.equal(typeof er.errno, 'number');
-       assert.equal(er.code, 'ENOENT');
-       assert.equal(er_path, 'stream for nonexistent file');
+--- ../node/test/simple/test-domain.js	2014-06-03 13:36:35.668847852 -0700
++++ test/simple/test-domain.js	2014-06-03 13:49:48.644328757 -0700
 @@ -104,7 +104,7 @@
        assert.ok(!er.domainBound);
        break;
