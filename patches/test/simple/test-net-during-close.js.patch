@@ -1,0 +1,10 @@
+--- ../node/test/simple/test-net-during-close.js	2013-08-08 17:10:55.234705339 -0700
++++ test/simple/test-net-during-close.js	2014-06-03 09:27:32.082524447 -0700
+@@ -40,6 +40,7 @@
+   accessedProperties = true;
+   // exit now, do not wait for the client error event
+   process.exit(0);
++  java.lang.System.exit(0);
+ });
+ 
+ process.on('exit', function() {
