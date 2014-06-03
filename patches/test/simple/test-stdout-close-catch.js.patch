@@ -1,6 +1,6 @@
---- ../nodejs/test/simple/test-stdout-close-catch.js	2014-01-07 15:32:53.556005400 -0800
-+++ test/simple/test-stdout-close-catch.js	2014-01-07 16:20:47.154233600 -0800
-@@ -28,14 +28,15 @@
+--- ../node/test/simple/test-stdout-close-catch.js	2014-06-03 10:30:02.920806600 -0700
++++ test/simple/test-stdout-close-catch.js	2014-06-03 10:28:16.616549766 -0700
+@@ -28,9 +28,9 @@
  
  var testScript = path.join(common.fixturesDir, 'catch-stdout-error.js');
  
@@ -12,10 +12,3 @@
            '-pe "process.exit(1);"';
  
  var child = child_process.exec(cmd);
- var output = '';
--var outputExpect = { 'code': 'EPIPE',
-+var outputExpect = { 'message' : 'write EPIPE',
-+                     'code': 'EPIPE',
-                      'errno': 'EPIPE',
-                      'syscall': 'write' };
- 

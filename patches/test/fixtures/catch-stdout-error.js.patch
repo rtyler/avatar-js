@@ -1,0 +1,10 @@
+--- ../node/test/fixtures/catch-stdout-error.js	2014-06-03 10:30:09.744817257 -0700
++++ test/fixtures/catch-stdout-error.js	2014-06-03 10:18:54.049568912 -0700
+@@ -33,6 +33,7 @@
+ process.stdout.on('error', function(er) {
+   console.error(JSON.stringify(er));
+   process.exit(42);
++  java.lang.System.exit(42);
+ });
+ 
+ write();
