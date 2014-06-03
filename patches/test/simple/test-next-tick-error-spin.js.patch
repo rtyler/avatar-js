@@ -1,5 +1,5 @@
---- ../node/test/simple/test-next-tick-error-spin.js	2013-08-22 13:48:54.000000000 +0200
-+++ test/simple/test-next-tick-error-spin.js	2014-01-10 09:14:49.000000000 +0100
+--- ../node/test/simple/test-next-tick-error-spin.js	2013-08-08 17:10:55.234705339 -0700
++++ test/simple/test-next-tick-error-spin.js	2014-06-03 09:33:49.306643394 -0700
 @@ -29,7 +29,7 @@
    });
    var timer = setTimeout(function() {
@@ -9,3 +9,10 @@
    child.on('exit', function(code) {
      console.error('ok');
      assert(!code);
+@@ -65,5 +65,6 @@
+     //process.stdout.close();
+     //process.stderr.close();
+     process.exit(0);
++    java.lang.System.exit(0);
+   });
+ }
