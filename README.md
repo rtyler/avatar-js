@@ -3,7 +3,7 @@ Build Instructions
 
 1. Setup build environment. Install a git client, jdk8, ant, python, C++ compiler and linker
 
-   1. Install the latest [jdk8](http://jdk8.java.net/download.html)
+   1. Install the latest [jdk8u20](http://jdk8.java.net/download.html)
    2. Ensure [ant](http://ant.apache.org/) is installed and `ant -version` is _1.8_+
    3. Ensure [python](http://python.org/) is installed and `python --version` is _2.7.5_+ <br/>
       _tip_: __python3__ does __not__ work
@@ -25,7 +25,7 @@ Build Instructions
 
    1. `git clone https://github.com/joyent/node.git source`
    2. `cd source`
-   3. `git checkout v0.10.25` <br/>
+   3. `git checkout v0.10.28` <br/>
       _tip_: run `git pull` to refresh the repo if you get an error saying that this version is unknown
    4. `cd ..`
 
@@ -98,7 +98,7 @@ Build Instructions
 Release Notes
 =============
 
-+ Compatible with Node.js v0.10.25
++ Compatible with Node.js v0.10.28
 
 + Platforms tested. 32-bit variants have not been tested _at all_
   + Ubuntu Linux x64
