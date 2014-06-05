@@ -31,7 +31,6 @@
     var JavaBuffer = Packages.com.oracle.avatar.js.buffer.Buffer;
     var StringUtils = Packages.com.oracle.libuv.StringUtils;
     var TCPHandle = Packages.com.oracle.libuv.handles.TCPHandle;
-    var ConsString = Packages.jdk.nashorn.internal.runtime.ConsString;
     var loop = __avatar.eventloop.loop();
     var factory = __avatar.eventloop.handleFactory();
 
@@ -229,8 +228,12 @@
         return wrapper;
     }
 
+    var ConsString; // initialized lazily on first use
     TCP.prototype.writeUtf8String = function(string) {
         var encoding = 'utf8';
+        if (!ConsString) {
+            ConsString = Packages.jdk.nashorn.internal.runtime.ConsString;
+        }
         if (string instanceof ConsString) {
             var wrapper = {bytes: string.length()};
             this._writeWrappers.push(wrapper);

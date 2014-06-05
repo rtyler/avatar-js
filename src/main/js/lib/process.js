@@ -61,6 +61,7 @@ var eventloop = __avatar.eventloop;
 var factory = eventloop.handleFactory();
 var System = java.lang.System;
 var Runtime = java.lang.Runtime.getRuntime();
+var RuntimePermission = java.lang.RuntimePermission;
 
 var LibUV = Packages.com.oracle.libuv.LibUV;
 var CheckHandle = Packages.com.oracle.libuv.handles.CheckHandle;
@@ -405,6 +406,10 @@ Object.defineProperty(exports, '_tickCallback', {
     value: function() {
         // Permission is required to tick callbacks,
         // user code is not expected to call this method.
+        var sm = System.getSecurityManager();
+        if (sm) {
+           sm.checkPermission(new RuntimePermission("avatar-js"));
+        }
         eventloop.processQueuedEvents();
     }
 });
@@ -417,6 +422,10 @@ Object.defineProperty(exports, 'chdir', {
 });
 
 exports.exit = function(status) {
+    var sm = System.getSecurityManager();
+    if (sm) {
+       sm.checkPermission(new RuntimePermission("avatar-js"));
+    }
     var code = status ? status : 0;
     __avatar.setExitCode(code);
     eventloop.interrupt();

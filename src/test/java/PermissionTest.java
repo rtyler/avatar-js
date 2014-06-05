@@ -25,8 +25,6 @@
 
 import java.io.File;
 import java.io.FilePermission;
-import java.lang.Exception;
-import java.lang.Throwable;
 import java.net.SocketPermission;
 import java.net.URL;
 import java.nio.file.FileSystems;
@@ -41,15 +39,17 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.PropertyPermission;
 import java.util.concurrent.Callable;
+
 import javax.script.ScriptEngine;
+
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+
 import com.oracle.avatar.js.Loader;
 import com.oracle.avatar.js.Server;
 import com.oracle.avatar.js.log.Logging;
 import com.oracle.libuv.LibUVPermission;
-
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.Test;
 
 /**
  * Test user scripts permissions. This test doesn't rely on a policy file.
@@ -145,7 +145,7 @@ public class PermissionTest {
     public void testTCPNoAuth() throws Throwable {
         int port = getPort();
         File f = new File("src/test/js/security/tcp.js");
-        Map<String, Object> bindings = new HashMap<String, Object>();
+        Map<String, Object> bindings = new HashMap<>();
         bindings.put(SCRIPT_PORT, port);
         bindings.put(SCRIPT_ON_EXIT, false);
         doFail(bindings, f);
@@ -155,7 +155,7 @@ public class PermissionTest {
     public void testTCPNoAccept() throws Throwable {
         int port = getPort();
         File f = new File("src/test/js/security/tcp.js");
-        Map<String, Object> bindings = new HashMap<String, Object>();
+        Map<String, Object> bindings = new HashMap<>();
         bindings.put(SCRIPT_PORT, port);
         bindings.put(SCRIPT_ON_EXIT, false);
         Permissions permissions = new Permissions();
@@ -168,7 +168,7 @@ public class PermissionTest {
     public void testTCPNoConnect() throws Throwable {
         int port = getPort();
         File f = new File("src/test/js/security/tcp.js");
-        Map<String, Object> bindings = new HashMap<String, Object>();
+        Map<String, Object> bindings = new HashMap<>();
         bindings.put(SCRIPT_PORT, port);
         bindings.put(SCRIPT_ON_EXIT, false);
         Permissions permissions = new Permissions();
@@ -183,9 +183,10 @@ public class PermissionTest {
         permissions.add(new SocketPermission(ADDRESS + ":" + port, "listen"));
         permissions.add(new SocketPermission(ADDRESS + ":" + port, "connect"));
         permissions.add(new SocketPermission(ADDRESS + ":*", "accept"));
+        permissions.add(new RuntimePermission("avatar-js"));
 
         File f = new File("src/test/js/security/tcp.js");
-        Map<String, Object> bindings = new HashMap<String, Object>();
+        Map<String, Object> bindings = new HashMap<>();
         bindings.put(SCRIPT_PORT, port);
         bindings.put(SCRIPT_ON_EXIT, true);
         doSuccess(bindings, f, permissions);
@@ -195,7 +196,7 @@ public class PermissionTest {
     public void testUDPNoAuth() throws Throwable {
         int port = getPort();
         File f = new File("src/test/js/security/udp.js");
-        Map<String, Object> bindings = new HashMap<String, Object>();
+        Map<String, Object> bindings = new HashMap<>();
         bindings.put(SCRIPT_PORT, port);
         bindings.put(SCRIPT_ON_EXIT, false);
         doFail(bindings, f);
@@ -209,9 +210,10 @@ public class PermissionTest {
         // required by dns.js
         permissions.add(new PropertyPermission("os.name", "read"));
         permissions.add(new SocketPermission(ADDRESS + ":" + port, "connect"));
+        permissions.add(new RuntimePermission("avatar-js"));
 
         File f = new File("src/test/js/security/udp.js");
-        Map<String, Object> bindings = new HashMap<String, Object>();
+        Map<String, Object> bindings = new HashMap<>();
         bindings.put(SCRIPT_PORT, port);
         bindings.put(SCRIPT_ON_EXIT, true);
         doSuccess(bindings, f, permissions);
@@ -220,7 +222,7 @@ public class PermissionTest {
     @Test
     public void testSpawnNoAuth() throws Throwable {
         File f = new File("src/test/js/security/spawn.js");
-        Map<String, Object> bindings = new HashMap<String, Object>();
+        Map<String, Object> bindings = new HashMap<>();
         // exePath
         Permissions permissions = new Permissions();
         permissions.add(new PropertyPermission("java.class.path", "read"));
@@ -240,9 +242,10 @@ public class PermissionTest {
         permissions.add(new RuntimePermission("getenv.*"));
         // execute
         permissions.add(new FilePermission("<<ALL FILES>>", "execute"));
+        permissions.add(new RuntimePermission("avatar-js"));
 
         File f = new File("src/test/js/security/spawn.js");
-        Map<String, Object> bindings = new HashMap<String, Object>();
+        Map<String, Object> bindings = new HashMap<>();
         bindings.put(SCRIPT_ON_EXIT, true);
         doSuccess(bindings, f, permissions);
     }
@@ -259,7 +262,7 @@ public class PermissionTest {
         }
 
         Files.deleteIfExists(FileSystems.getDefault().getPath(PIPE_NAME));
-        Map<String, Object> bindings = new HashMap<String, Object>();
+        Map<String, Object> bindings = new HashMap<>();
         bindings.put(SCRIPT_PIPE, PIPE_NAME);
         Permissions permissions = new Permissions();
         //platform
@@ -279,7 +282,7 @@ public class PermissionTest {
         }
 
         Files.deleteIfExists(FileSystems.getDefault().getPath(PIPE_NAME));
-        Map<String, Object> bindings = new HashMap<String, Object>();
+        Map<String, Object> bindings = new HashMap<>();
         bindings.put(SCRIPT_PIPE, PIPE_NAME);
         bindings.put(SCRIPT_ON_EXIT, true);
         Permissions permissions = new Permissions();
@@ -292,7 +295,7 @@ public class PermissionTest {
         permissions.add(new LibUVPermission("libuv.pipe.connect"));
         permissions.add(new LibUVPermission("libuv.pipe.bind"));
         permissions.add(new LibUVPermission("libuv.pipe.accept"));
-
+        permissions.add(new RuntimePermission("avatar-js"));
 
         doSuccess(bindings, f, permissions);
     }
@@ -309,7 +312,7 @@ public class PermissionTest {
         }
 
         Files.deleteIfExists(FileSystems.getDefault().getPath(PIPE_NAME));
-        Map<String, Object> bindings = new HashMap<String, Object>();
+        Map<String, Object> bindings = new HashMap<>();
         bindings.put(SCRIPT_PIPE, PIPE_NAME);
         bindings.put(SCRIPT_ON_EXIT, false);
         Permissions permissions = new Permissions();
@@ -334,7 +337,7 @@ public class PermissionTest {
         }
 
         Files.deleteIfExists(FileSystems.getDefault().getPath(PIPE_NAME));
-        Map<String, Object> bindings = new HashMap<String, Object>();
+        Map<String, Object> bindings = new HashMap<>();
         bindings.put(SCRIPT_PIPE, PIPE_NAME);
         bindings.put(SCRIPT_ON_EXIT, false);
         Permissions permissions = new Permissions();
@@ -349,9 +352,10 @@ public class PermissionTest {
     @Test
     public void testModules() throws Throwable {
         File f = new File("src/test/js/security/modules.js");
-        Map<String, Object> bindings = new HashMap<String, Object>();
+        Map<String, Object> bindings = new HashMap<>();
 
         Permissions permissions = new Permissions();
+        permissions.add(new RuntimePermission("avatar-js"));
 
         doSuccess(bindings, f, permissions);
     }
@@ -359,7 +363,7 @@ public class PermissionTest {
     @Test
     public void testModules2() throws Throwable {
         File f = new File("src/test/js/security/modules2.js");
-        Map<String, Object> bindings = new HashMap<String, Object>();
+        Map<String, Object> bindings = new HashMap<>();
 
         Permissions permissions = new Permissions();
         bindings.put(SCRIPT_PORT, getPort());
@@ -369,13 +373,13 @@ public class PermissionTest {
     @Test
     public void testProcess() throws Throwable {
         File f = new File("src/test/js/security/process.js");
-        Map<String, Object> bindings = new HashMap<String, Object>();
+        Map<String, Object> bindings = new HashMap<>();
         String osname = System.getProperty("os.name").toLowerCase();
         if (osname.startsWith("windows")) {
             bindings.put("__test_windows", "true");
         }
-
-        doSuccess(bindings, f, new Permissions());
+        Permissions permissions = new Permissions();
+        doSuccess(bindings, f, permissions);
     }
 
     private static void testFailure(Callable r) throws Exception {
