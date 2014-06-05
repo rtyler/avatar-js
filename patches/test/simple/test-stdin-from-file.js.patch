@@ -1,7 +1,7 @@
---- ../nodejs/test/simple/test-stdin-from-file.js	2013-12-19 22:22:19.827516500 -0800
-+++ test/simple/test-stdin-from-file.js	2014-01-06 18:31:59.224650500 -0800
+--- ../node/test/simple/test-stdin-from-file.js	2014-06-04 14:14:39.975752401 -0700
++++ test/simple/test-stdin-from-file.js	2014-06-05 09:31:58.690420585 -0700
 @@ -31,7 +31,7 @@
- var stdoutScript = join(common.fixturesDir, 'echo.js');
+ var stdoutScript = join(common.fixturesDir, 'echo-close-check.js');
  var tmpFile = join(common.fixturesDir, 'stdin.txt');
  
 -var cmd = '"' + process.argv[0] + '" "' + stdoutScript + '" < "' +
