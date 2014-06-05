@@ -424,7 +424,7 @@ Object.defineProperty(exports, 'chdir', {
 exports.exit = function(status) {
     var sm = System.getSecurityManager();
     if (sm) {
-       sm.checkPermission(new RuntimePermission("avatar-js"));
+       sm.checkPermission(new RuntimePermission("exitVM"));
     }
     var code = status ? status : 0;
     __avatar.setExitCode(code);
