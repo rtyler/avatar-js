@@ -431,6 +431,10 @@ exports.exit = function(status) {
     eventloop.interrupt();
 }
 
+exports.reallyExit = function(status) {
+    exports.exit(status);
+}
+
 Object.defineProperty(exports, 'memoryUsage', {
     enumerable: true,
     value: function(native) {

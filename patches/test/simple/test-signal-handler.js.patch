@@ -1,6 +1,11 @@
---- ../node/test/simple/test-signal-handler.js	2013-12-09 10:27:27.000000000 +0100
-+++ ./test/simple/test-signal-handler.js	2014-01-13 18:13:37.000000000 +0100
-@@ -27,6 +27,9 @@
+--- ../node/test/simple/test-signal-handler.js	2013-08-08 18:44:24 -0700
++++ test/simple/test-signal-handler.js	2014-06-06 11:32:36 -0700
+@@ -23,10 +23,14 @@
+ // SIGUSR1 and SIGHUP are not supported on Windows
+ if (process.platform === 'win32') {
+   process.exit(0);
++  return;
+ }
  
  var common = require('../common');
  var assert = require('assert');
