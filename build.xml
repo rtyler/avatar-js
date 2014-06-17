@@ -153,7 +153,7 @@
         <mkdir dir="${test.dir}/tmp"/>
     </target>
 
-    <target name="configure-unix" depends="config-gyp" if="isLinux">
+    <target name="configure-unix" depends="config-gyp" if="isUnix">
         <exec executable="python" dir="." failonerror="true">
             <arg value="${source.home}/tools/gyp/gyp_main.py"/>
             <arg value="--depth=."/>
@@ -185,6 +185,11 @@
         </exec>
     </target>
 
+    <target name="make-solaris" if="isSolaris" unless="product.lib.uptodate">
+        <exec executable="gmake" failonerror="true">
+            <arg value="builddir_name=out"/>
+        </exec>
+    </target>
 
     <target name="javah" depends="compile">
         <javah destdir="${native.build.dir}" classpath="${classes.dir}">
@@ -193,7 +198,7 @@
         </javah>
     </target>
 
-    <target name="jar" depends="generate-build-properties, compile, make, shlib-linux, shlib-macos, shlib-windows">
+    <target name="jar" depends="generate-build-properties, compile, make, shlib-linux, shlib-solaris, shlib-macos, shlib-windows">
         <copy todir="${classes.dir}">
             <fileset dir="${src.js.dir}">
                 <include name="**/*.js"/>

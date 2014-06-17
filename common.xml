@@ -28,9 +28,14 @@
         <condition property="isLinux">
             <and>
                 <os family="unix"/>
-                <not>
-                    <os family="mac"/>
-                </not>
+                <os name="Linux"/>
+            </and>
+        </condition>
+
+        <condition property="isSolaris">
+            <and>
+                <os family="unix"/>
+                <os name="SunOS"/>
             </and>
         </condition>
 
@@ -76,7 +81,7 @@
         <tstamp/>
     </target>
 
-    <target name="init-linux" depends="init" if="isLinux">
+    <target name="init-unix" depends="init" if="isUnix">
         <property name="product.lib" value="${dist.dir}/${product.name}.so"/>
     </target>
 
@@ -119,7 +124,7 @@
         </sequential>
     </macrodef>
 
-    <target name="configure" depends="init-linux, init-macos, init-windows, configure-unix, configure-mac, configure-windows">
+    <target name="configure" depends="init-unix, init-macos, init-windows, configure-unix, configure-mac, configure-windows">
         <copy todir="${native.build.dir}">
             <fileset dir="src/main/native" includes="**/*.cpp"/>
             <fileset dir="src/main/native" includes="**/*.h"/>
@@ -140,7 +145,7 @@
         </javac>
     </target>
 
-    <target name="make" depends="configure, compile, javah, make-linux, make-macos, make-windows"
+    <target name="make" depends="configure, compile, javah, make-linux, make-solaris, make-macos, make-windows"
             description="runs make to build native sources">
         <mkdir dir="${dist.dir}"/>
     </target>
@@ -152,7 +157,9 @@
     </target>
 
     <target name="make-macos" if="isMacOSX" unless="product.lib.uptodate">
-        <exec executable="make" failonerror="true"/>
+        <exec executable="make" failonerror="true">
+            <arg value="builddir_name=out"/>
+        </exec>
     </target>
 
     <target name="make-windows" if="isWindows" unless="product.lib.uptodate">
@@ -190,6 +197,36 @@
             <arg value="-ldl"/>
             <arg value="-lrt"/>
             <arg value="-pthread"/>
+            <arg value="-lstdc++"/>
+        </exec>
+    </target>
+
+    <target name="shlib-solaris" depends="init"  if="isSolaris">
+        <fileset dir="${basedir}/out/${source.home}" id="libuv" includes="**/*.o" excludes="**/test/*" erroronmissingdir="false"/>
+        <pathconvert property="libuv.objs" refid="libuv" pathsep=" " />
+
+        <fileset dir="${libuv.home}/out/${build.type}" id="libuv-java" includes="**/*.o" excludes="**/test/*" erroronmissingdir="false"/>
+        <pathconvert property="libuv-java.objs" refid="libuv-java" pathsep=" "/>
+
+        <fileset dir="${http-parser.home}/out/${build.type}" id="http-parser-java" includes="**/*.o" erroronmissingdir="false"/>
+        <pathconvert property="http-parser-java.objs" refid="http-parser-java" pathsep=" " />
+
+        <fileset dir="${avatar-js.home}/out/${build.type}" id="avatar-js" includes="**/*.o" erroronmissingdir="false"/>
+        <pathconvert property="avatar-js.objs" refid="avatar-js" pathsep=" " />
+
+        <exec executable="gcc" dir="${dist.dir}" failonerror="true">
+            <arg value="-m64"/>
+            <arg value="-shared"/>
+            <arg value="-o"/>
+            <arg value="libavatar-js.so"/>
+            <arg line="${libuv.objs}"/>
+            <arg line="${libuv-java.objs}"/>
+            <arg line="${http-parser-java.objs}"/>
+            <arg line="${avatar-js.objs}"/>
+            <arg value="-lm"/>
+            <arg value="-ldl"/>
+            <arg value="-lrt"/>
+            <arg value="-pthreads"/>
             <arg value="-lstdc++"/>
         </exec>
     </target>
