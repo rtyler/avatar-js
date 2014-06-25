@@ -316,16 +316,21 @@
         <apply-diff src="test/simple" mod="${test.dir}/simple" name="test-domain.js"/>
         <apply-diff src="test/simple" mod="${test.dir}/simple" name="test-error-reporting.js"/>
         <apply-diff src="test/simple" mod="${test.dir}/simple" name="test-force-repl.js"/>
+        <apply-diff src="test/simple" mod="${test.dir}/simple" name="test-fs-empty-readStream.js"/>
         <apply-diff src="test/simple" mod="${test.dir}/simple" name="test-fs-read-stream.js"/>
         <apply-diff src="test/simple" mod="${test.dir}/simple" name="test-fs-readfile-error.js"/>
         <apply-diff src="test/simple" mod="${test.dir}/simple" name="test-fs-readfile-pipe.js"/>
         <apply-diff src="test/simple" mod="${test.dir}/simple" name="test-http.js"/>
+        <apply-diff src="test/simple" mod="${test.dir}/simple" name="test-http-1.0.js"/>
         <apply-diff src="test/simple" mod="${test.dir}/simple" name="test-http-client-timeout-agent.js"/>
         <apply-diff src="test/simple" mod="${test.dir}/simple" name="test-http-client-timeout-event.js"/>
         <apply-diff src="test/simple" mod="${test.dir}/simple" name="test-http-default-encoding.js"/>
         <apply-diff src="test/simple" mod="${test.dir}/simple" name="test-http-end-throw-socket-handling.js"/>
         <apply-diff src="test/simple" mod="${test.dir}/simple" name="test-http-many-keep-alive-connections.js"/>
         <apply-diff src="test/simple" mod="${test.dir}/simple" name="test-http-pipeline-flood.js"/>
+        <apply-diff src="test/simple" mod="${test.dir}/simple" name="test-http-set-timeout.js"/>
+        <apply-diff src="test/simple" mod="${test.dir}/simple" name="test-http-set-timeout-server.js"/>
+        <apply-diff src="test/simple" mod="${test.dir}/simple" name="test-https-eof-for-eom.js"/>
         <apply-diff src="test/simple" mod="${test.dir}/simple" name="test-https-strict.js"/>
         <apply-diff src="test/simple" mod="${test.dir}/simple" name="test-https-timeout.js"/>
         <apply-diff src="test/simple" mod="${test.dir}/simple" name="test-module-loading.js"/>
@@ -335,6 +340,7 @@
         <apply-diff src="test/simple" mod="${test.dir}/simple" name="test-net-server-address.js"/>
         <apply-diff src="test/simple" mod="${test.dir}/simple" name="test-net-server-unref.js"/>
         <apply-diff src="test/simple" mod="${test.dir}/simple" name="test-net-settimeout.js"/>
+        <apply-diff src="test/simple" mod="${test.dir}/simple" name="test-net-socket-timeout.js"/>
         <apply-diff src="test/simple" mod="${test.dir}/simple" name="test-net-write-slow.js"/>
         <apply-diff src="test/simple" mod="${test.dir}/simple" name="test-next-tick.js"/>
         <apply-diff src="test/simple" mod="${test.dir}/simple" name="test-next-tick-error-spin.js"/>
@@ -425,16 +431,21 @@
         <apply-patch-file target="${test.dir}/simple" dir="test/simple" name="test-domain.js"/>
         <apply-patch-file target="${test.dir}/simple" dir="test/simple" name="test-error-reporting.js"/>
         <apply-patch-file target="${test.dir}/simple" dir="test/simple" name="test-force-repl.js"/>
+        <apply-patch-file target="${test.dir}/simple" dir="test/simple" name="test-fs-empty-readStream.js"/>
         <apply-patch-file target="${test.dir}/simple" dir="test/simple" name="test-fs-read-stream.js"/>
         <apply-patch-file target="${test.dir}/simple" dir="test/simple" name="test-fs-readfile-error.js"/>
         <apply-patch-file target="${test.dir}/simple" dir="test/simple" name="test-fs-readfile-pipe.js"/>
         <apply-patch-file target="${test.dir}/simple" dir="test/simple" name="test-http.js"/>
+        <apply-patch-file target="${test.dir}/simple" dir="test/simple" name="test-http-1.0.js"/>
         <apply-patch-file target="${test.dir}/simple" dir="test/simple" name="test-http-client-timeout-agent.js"/>
         <apply-patch-file target="${test.dir}/simple" dir="test/simple" name="test-http-client-timeout-event.js"/>
         <apply-patch-file target="${test.dir}/simple" dir="test/simple" name="test-http-default-encoding.js"/>
         <apply-patch-file target="${test.dir}/simple" dir="test/simple" name="test-http-end-throw-socket-handling.js"/>
         <apply-patch-file target="${test.dir}/simple" dir="test/simple" name="test-http-many-keep-alive-connections.js"/>
         <apply-patch-file target="${test.dir}/simple" dir="test/simple" name="test-http-pipeline-flood.js"/>
+        <apply-patch-file target="${test.dir}/simple" dir="test/simple" name="test-http-set-timeout.js"/>
+        <apply-patch-file target="${test.dir}/simple" dir="test/simple" name="test-http-set-timeout-server.js"/>
+        <apply-patch-file target="${test.dir}/simple" dir="test/simple" name="test-https-eof-for-eom.js"/>
         <apply-patch-file target="${test.dir}/simple" dir="test/simple" name="test-https-strict.js"/>
         <apply-patch-file target="${test.dir}/simple" dir="test/simple" name="test-https-timeout.js"/>
         <apply-patch-file target="${test.dir}/simple" dir="test/simple" name="test-module-loading.js"/>
@@ -444,6 +455,7 @@
         <apply-patch-file target="${test.dir}/simple" dir="test/simple" name="test-net-server-address.js"/>
         <apply-patch-file target="${test.dir}/simple" dir="test/simple" name="test-net-server-unref.js"/>
         <apply-patch-file target="${test.dir}/simple" dir="test/simple" name="test-net-settimeout.js"/>
+        <apply-patch-file target="${test.dir}/simple" dir="test/simple" name="test-net-socket-timeout.js"/>
         <apply-patch-file target="${test.dir}/simple" dir="test/simple" name="test-net-write-slow.js"/>
         <apply-patch-file target="${test.dir}/simple" dir="test/simple" name="test-next-tick.js"/>
         <apply-patch-file target="${test.dir}/simple" dir="test/simple" name="test-next-tick-error-spin.js"/>
@@ -604,7 +616,6 @@
             <jvmarg value="-Xmx4g"/>
             <jvmarg value="-ea"/>
             <sysproperty key="java.library.path" value="${dist.dir}"/>
-            <arg line="-nofork"/>
             <arg line="test/simple"/>
         </java>
     </target>

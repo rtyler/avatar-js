@@ -9,7 +9,7 @@
    process.removeListener('uncaughtException', catcher);
    throw new Error('Taking too long!');
 -}, 1000).unref();
-+},10000).unref();
++}, 20000).unref();
  
  process.on('uncaughtException', catcher);
  var errors = 0;

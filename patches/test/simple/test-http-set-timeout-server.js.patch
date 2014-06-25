@@ -1,0 +1,56 @@
+--- ../node/test/simple/test-http-set-timeout-server.js	2013-08-08 17:10:55.226705339 -0700
++++ test/simple/test-http-set-timeout-server.js	2014-06-24 20:15:15.431648410 -0700
+@@ -50,7 +50,7 @@
+     // just do nothing, we should get a timeout event.
+   });
+   server.listen(common.PORT);
+-  server.setTimeout(50, function(socket) {
++  server.setTimeout(500, function(socket) {
+     caughtTimeout = true;
+     socket.destroy();
+     server.close();
+@@ -66,7 +66,7 @@
+   });
+   var server = http.createServer(function(req, res) {
+     // just do nothing, we should get a timeout event.
+-    req.setTimeout(50, function() {
++    req.setTimeout(500, function() {
+       caughtTimeout = true;
+       req.socket.destroy();
+       server.close();
+@@ -87,7 +87,7 @@
+   });
+   var server = http.createServer(function(req, res) {
+     // just do nothing, we should get a timeout event.
+-    res.setTimeout(50, function() {
++    res.setTimeout(500, function() {
+       caughtTimeout = true;
+       res.socket.destroy();
+       server.close();
+@@ -107,7 +107,7 @@
+   });
+   var server = http.createServer(function(req, res) {
+     // just do nothing, we should get a timeout event.
+-    req.setTimeout(50, function(socket) {
++    req.setTimeout(500, function(socket) {
+       caughtTimeoutOnRequest = true;
+     });
+     res.on('timeout', function(socket) {
+@@ -129,7 +129,7 @@
+     assert.equal(caughtTimeout, '/2');
+   });
+   var server = http.createServer(function(req, res) {
+-    res.setTimeout(50, function() {
++    res.setTimeout(500, function() {
+       caughtTimeout += req.url;
+     });
+     if (req.url === '/1') res.end();
+@@ -165,7 +165,7 @@
+     });
+     res.end();
+   });
+-  server.setTimeout(50, function(socket) {
++  server.setTimeout(500, function(socket) {
+     caughtTimeoutOnServer = true;
+     socket.destroy();
+     server.close();

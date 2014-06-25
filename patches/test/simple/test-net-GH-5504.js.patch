@@ -16,7 +16,7 @@
        throw new Error('hang');
      });
 -  }, 1000).unref();
-+  }, 30000).unref();
++  }, 60000).unref();
  
    var s = spawn(node, [__filename, 'server'], opt);
    var c;

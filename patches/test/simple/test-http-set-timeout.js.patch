@@ -1,0 +1,11 @@
+--- ../node/test/simple/test-http-set-timeout.js	2013-09-09 09:17:35.003856127 -0700
++++ test/simple/test-http-set-timeout.js	2014-06-24 20:39:28.719277677 -0700
+@@ -39,7 +39,7 @@
+ 
+   var errorTimer = setTimeout(function() {
+     throw new Error('Timeout was not successful');
+-  }, 2000);
++  }, 5000);
+ 
+   var x = http.get({port: common.PORT, path: '/'});
+   x.on('error', function() {

@@ -1,0 +1,11 @@
+--- ../node/test/simple/test-net-can-reset-timeout.js	2013-08-08 17:10:55.234705339 -0700
++++ test/simple/test-net-can-reset-timeout.js	2014-06-25 10:32:19.114082111 -0700
+@@ -26,7 +26,7 @@
+ var timeoutCount = 0;
+ 
+ var server = net.createServer(function(stream) {
+-  stream.setTimeout(100);
++  stream.setTimeout(1000);
+ 
+   stream.resume();
+ 

@@ -1,0 +1,11 @@
+--- ../node/test/simple/test-fs-empty-readStream.js	2013-08-08 17:10:55.210705339 -0700
++++ test/simple/test-fs-empty-readStream.js	2014-06-24 15:46:31.429525547 -0700
+@@ -43,7 +43,7 @@
+ 
+   setTimeout(function () {
+     assert.equal(readEmit, true);
+-  }, 50);
++  }, 500);
+ });
+ 
+ fs.open(emptyFile, 'r', function (error, fd) {
