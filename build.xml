@@ -604,20 +604,37 @@
         </jar>
     </target>
 
+    <macrodef name="run-tests" description="run tests in dir">
+        <attribute name="dir"/>
+        <sequential>
+            <java classname="runner.TestRunner" failonerror="true" fork="true" dir=".">
+                <classpath>
+                    <path location="${classes.dir}"/>
+                    <path location="${test.classes.dir}"/>
+                    <path refid="javac.test.classpath.id"/>
+                </classpath>
+                <jvmarg value="-Xverify:all"/>
+                <jvmarg value="-Xcheck:jni"/>
+                <jvmarg value="-Xmx4g"/>
+                <jvmarg value="-ea"/>
+                <sysproperty key="java.library.path" value="${dist.dir}"/>
+                <arg line="@{dir}"/>
+            </java>
+        </sequential>
+    </macrodef>
+
     <target name="test-simple" depends="compile-tests">
-        <java classname="runner.TestRunner" failonerror="true" fork="true" dir=".">
-            <classpath>
-                <path location="${classes.dir}"/>
-                <path location="${test.classes.dir}"/>
-                <path refid="javac.test.classpath.id"/>
-            </classpath>
-            <jvmarg value="-Xverify:all"/>
-            <jvmarg value="-Xcheck:jni"/>
-            <jvmarg value="-Xmx4g"/>
-            <jvmarg value="-ea"/>
-            <sysproperty key="java.library.path" value="${dist.dir}"/>
-            <arg line="test/simple"/>
-        </java>
+        <run-tests dir="test/simple"/>
     </target>
+
+    <target name="test-pummel" depends="compile-tests">
+        <run-tests dir="test/pummel"/>
+    </target>
+
+    <target name="test-crypto" depends="compile-tests">
+        <run-tests dir="test/crypto"/>
+    </target>
+
+    <target name="test" depends="test-simple, test-pummel, test-crypto"/>
 
 </project>
