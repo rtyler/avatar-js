@@ -448,11 +448,11 @@ Object.defineProperty(exports, 'memoryUsage', {
     }
 });
 
-var startTime = LibUV.getUptime();
+var startTime = System.currentTimeMillis();
 Object.defineProperty(exports, 'uptime', {
     enumerable: true,
     value: function() {
-        return LibUV.getUptime() - startTime;
+        return (System.currentTimeMillis() - startTime) / 1000;
     }
 });
 
