@@ -394,6 +394,7 @@
         <apply-diff src="test/pummel" mod="${test.dir}/pummel" name="test-net-pingpong.js"/>
         <apply-diff src="test/pummel" mod="${test.dir}/pummel" name="test-net-throttle.js"/>
         <apply-diff src="test/pummel" mod="${test.dir}/pummel" name="test-process-uptime.js"/>
+        <apply-diff src="test/pummel" mod="${test.dir}/pummel" name="test-timers.js"/>
         <apply-diff src="test/pummel" mod="${test.dir}/pummel" name="test-tls-ci-reneg-attack.js"/>
         <!-- test/fixtures -->
         <apply-diff src="test/fixtures" mod="${test.dir}/fixtures" name="create-file.js"/>
@@ -510,6 +511,7 @@
         <apply-patch-file target="${test.dir}/pummel" dir="test/pummel" name="test-net-pingpong.js"/>
         <apply-patch-file target="${test.dir}/pummel" dir="test/pummel" name="test-net-throttle.js"/>
         <apply-patch-file target="${test.dir}/pummel" dir="test/pummel" name="test-process-uptime.js"/>
+        <apply-patch-file target="${test.dir}/pummel" dir="test/pummel" name="test-timers.js"/>
         <apply-patch-file target="${test.dir}/pummel" dir="test/pummel" name="test-tls-ci-reneg-attack.js"/>
         <!-- test/fixtures -->
         <apply-patch-file target="${test.dir}/fixtures" dir="test/fixtures" name="create-file.js"/>

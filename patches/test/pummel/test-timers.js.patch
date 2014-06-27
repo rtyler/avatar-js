@@ -1,0 +1,11 @@
+--- ../node/test/pummel/test-timers.js	2013-08-08 17:10:55.110705338 -0700
++++ test/pummel/test-timers.js	2014-06-27 16:01:44.707806587 -0700
+@@ -22,7 +22,7 @@
+ var common = require('../common');
+ var assert = require('assert');
+ 
+-var WINDOW = 200; // why is does this need to be so big?
++var WINDOW = 2000; // why is does this need to be so big?
+ 
+ var interval_count = 0;
+ var setTimeout_called = false;
