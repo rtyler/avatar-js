@@ -1,0 +1,11 @@
+--- ../node/test/pummel/test-http-upload-timeout.js	2013-08-08 17:10:55.110705338 -0700
++++ test/pummel/test-http-upload-timeout.js	2014-06-27 16:42:54.779508385 -0700
+@@ -29,7 +29,7 @@
+     connections = 0;
+ 
+ server.on('request', function(req, res) {
+-  req.socket.setTimeout(1000);
++  req.socket.setTimeout(2000);
+   req.socket.on('timeout', function() {
+     throw new Error('Unexpected timeout');
+   });

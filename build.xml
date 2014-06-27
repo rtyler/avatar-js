@@ -389,6 +389,7 @@
         <apply-diff src="test/pummel" mod="${test.dir}/crypto" name="test-crypto-dh.js"/>
         <apply-diff src="test/pummel" mod="${test.dir}/pummel" name="test-dh-regr.js"/>
         <apply-diff src="test/pummel" mod="${test.dir}/pummel" name="test-exec.js"/>
+        <apply-diff src="test/pummel" mod="${test.dir}/pummel" name="test-http-upload-timeout.js"/>
         <apply-diff src="test/pummel" mod="${test.dir}/pummel" name="test-https-ci-reneg-attack.js"/>
         <apply-diff src="test/pummel" mod="${test.dir}/pummel" name="test-net-pause.js"/>
         <apply-diff src="test/pummel" mod="${test.dir}/pummel" name="test-net-pingpong.js"/>
@@ -506,6 +507,7 @@
         <apply-patch-file target="${test.dir}/pummel" dir="test/crypto" name="test-crypto-dh.js"/>
         <apply-patch-file target="${test.dir}/pummel" dir="test/pummel" name="test-dh-regr.js"/>
         <apply-patch-file target="${test.dir}/pummel" dir="test/pummel" name="test-exec.js"/>
+        <apply-patch-file target="${test.dir}/pummel" dir="test/pummel" name="test-http-upload-timeout.js"/>
         <apply-patch-file target="${test.dir}/pummel" dir="test/pummel" name="test-https-ci-reneg-attack.js"/>
         <apply-patch-file target="${test.dir}/pummel" dir="test/pummel" name="test-net-pause.js"/>
         <apply-patch-file target="${test.dir}/pummel" dir="test/pummel" name="test-net-pingpong.js"/>
