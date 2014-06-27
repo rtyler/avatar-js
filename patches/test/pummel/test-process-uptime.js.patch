@@ -5,7 +5,7 @@
  
  console.error(process.uptime());
 -assert.ok(process.uptime() <= 2);
-+assert.ok(process.uptime() <= 3);
++assert.ok(process.uptime() <= 10);
  
  var original = process.uptime();
  
