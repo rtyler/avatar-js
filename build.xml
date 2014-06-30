@@ -335,6 +335,7 @@
         <apply-diff src="test/simple" mod="${test.dir}/simple" name="test-https-timeout.js"/>
         <apply-diff src="test/simple" mod="${test.dir}/simple" name="test-module-loading.js"/>
         <apply-diff src="test/simple" mod="${test.dir}/simple" name="test-net-GH-5504.js"/>
+        <apply-diff src="test/simple" mod="${test.dir}/simple" name="test-net-can-reset-timeout.js"/>
         <apply-diff src="test/simple" mod="${test.dir}/simple" name="test-net-during-close.js"/>
         <apply-diff src="test/simple" mod="${test.dir}/simple" name="test-net-pingpong.js"/>
         <apply-diff src="test/simple" mod="${test.dir}/simple" name="test-net-server-address.js"/>
@@ -453,6 +454,7 @@
         <apply-patch-file target="${test.dir}/simple" dir="test/simple" name="test-https-timeout.js"/>
         <apply-patch-file target="${test.dir}/simple" dir="test/simple" name="test-module-loading.js"/>
         <apply-patch-file target="${test.dir}/simple" dir="test/simple" name="test-net-GH-5504.js"/>
+        <apply-patch-file target="${test.dir}/simple" dir="test/simple" name="test-net-can-reset-timeout.js"/>
         <apply-patch-file target="${test.dir}/simple" dir="test/simple" name="test-net-during-close.js"/>
         <apply-patch-file target="${test.dir}/simple" dir="test/simple" name="test-net-pingpong.js"/>
         <apply-patch-file target="${test.dir}/simple" dir="test/simple" name="test-net-server-address.js"/>
