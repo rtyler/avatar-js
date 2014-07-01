@@ -622,7 +622,9 @@
                     <path refid="javac.test.classpath.id"/>
                 </classpath>
                 <jvmarg value="-Xverify:all"/>
+                <!-- TODO: temporarily disabled due to https://bugs.openjdk.java.net/browse/JDK-8046668
                 <jvmarg value="-Xcheck:jni"/>
+                -->
                 <jvmarg value="-Xmx4g"/>
                 <jvmarg value="-ea"/>
                 <sysproperty key="java.library.path" value="${dist.dir}"/>

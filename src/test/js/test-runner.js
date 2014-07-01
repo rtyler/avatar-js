@@ -160,7 +160,8 @@ var reset = colorize ? escape + 0 + 'm' : '';
 
 var args = ['-server', (assertions ? '-ea' : '-da'), '-Djava.awt.headless=true'];
 args.push('-Xmx' + maxheap);
-args.push('-Xcheck:jni');
+// TODO: temporarily disabled due to https://bugs.openjdk.java.net/browse/JDK-8046668
+// args.push('-Xcheck:jni');
 args.push('-Djava.library.path=' + target);
 var jarArgs = ['-jar', jar.toString()];
 if (deprecations) {
