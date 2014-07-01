@@ -350,6 +350,7 @@
         <apply-diff src="test/simple" mod="${test.dir}/simple" name="test-pipe-head.js"/>
         <apply-diff src="test/simple" mod="${test.dir}/simple" name="test-pipe-unref.js"/>
         <apply-diff src="test/simple" mod="${test.dir}/simple" name="test-readline-interface.js"/>
+        <apply-diff src="test/simple" mod="${test.dir}/simple" name="test-regress-GH-897.js"/>
         <apply-diff src="test/simple" mod="${test.dir}/simple" name="test-require-json.js"/>
         <apply-diff src="test/simple" mod="${test.dir}/simple" name="test-repl.js"/>
         <apply-diff src="test/simple" mod="${test.dir}/simple" name="test-script-context.js"/>
@@ -469,6 +470,7 @@
         <apply-patch-file target="${test.dir}/simple" dir="test/simple" name="test-pipe-head.js"/>
         <apply-patch-file target="${test.dir}/simple" dir="test/simple" name="test-pipe-unref.js"/>
         <apply-patch-file target="${test.dir}/simple" dir="test/simple" name="test-readline-interface.js"/>
+        <apply-patch-file target="${test.dir}/simple" dir="test/simple" name="test-regress-GH-897.js"/>
         <apply-patch-file target="${test.dir}/simple" dir="test/simple" name="test-require-json.js"/>
         <apply-patch-file target="${test.dir}/simple" dir="test/simple" name="test-repl.js"/>
         <apply-patch-file target="${test.dir}/simple" dir="test/simple" name="test-script-context.js"/>
