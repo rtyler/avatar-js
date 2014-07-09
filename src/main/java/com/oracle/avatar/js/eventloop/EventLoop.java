@@ -50,6 +50,7 @@ import com.oracle.libuv.cb.AsyncCallback;
 import com.oracle.libuv.cb.CallbackExceptionHandler;
 import com.oracle.libuv.cb.CallbackHandler;
 import com.oracle.libuv.cb.CallbackHandlerFactory;
+import com.oracle.libuv.cb.CheckCallback;
 import com.oracle.libuv.cb.ContextProvider;
 import com.oracle.libuv.handles.AsyncHandle;
 import com.oracle.libuv.handles.CheckHandle;
@@ -86,6 +87,8 @@ public final class EventLoop {
     private Callback uncaughtExceptionHandler = null;
     private Throwable pendingException = null;
     private boolean syncEventsProcessing = true;
+    private long tickStart = 0;
+    private long tickDuration = 0;
     private ScriptObjectMirror domain;
 
     public static final class Handle implements AutoCloseable {
@@ -453,6 +456,16 @@ public final class EventLoop {
         LOG = logger("eventloop");
 
         checkHandle = this.handleFactory.newCheckHandle();
+        tickStart = System.currentTimeMillis();
+        checkHandle.setCheckCallback(new CheckCallback() {
+            @Override
+            public void onCheck(int status) throws Exception {
+                final long now = System.currentTimeMillis();
+                tickDuration = now - tickStart;
+                tickStart = now;
+            }
+        });
+        checkHandle.start();
         checkHandle.unref();
 
         refHandle = this.handleFactory.newAsyncHandle();
