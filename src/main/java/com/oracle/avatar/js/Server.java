@@ -453,7 +453,8 @@ public final class Server implements AutoCloseable {
     public static ScriptEngine newEngine() {
         checkPermission();
         final String[] options = new String[] {
-                "--const-as-var"
+                "-scripting", // shebangs in modules
+                "--const-as-var" // until const is fully supported
         };
         try {
             return ENGINE_FACTORY.getScriptEngine(options);
