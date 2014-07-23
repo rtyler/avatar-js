@@ -1,11 +1,11 @@
---- ../node/lib/module.js	2013-08-22 13:55:28.000000000 +0200
-+++ src/main/js/lib/module.js	2013-12-20 17:16:24.000000000 +0100
+--- ../node/lib/module.js	2014-06-10 11:35:11.000000000 -0700
++++ src/main/js/lib/module.js	2014-07-23 13:13:20.000000000 -0700
 @@ -271,13 +271,20 @@
    return [id, [path.dirname(parent.filename)]];
  };
  
 +var AccessController = java.security.AccessController;
-+var PrivilegedAction = java.security.PrivilegedAction;       
++var PrivilegedAction = java.security.PrivilegedAction;
 +var Server = Packages.com.oracle.avatar.js.Server;
  
  Module._load = function(request, parent, isMain) {
@@ -32,11 +32,19 @@
 +            replModule._compile(null, Server.getResource('/lib/repl.js'));
 +        }
 +      });
-+      
++
        NativeModule._cache.repl = replModule;
        return replModule.exports;
      }
-@@ -309,7 +321,11 @@
+@@ -298,6 +310,7 @@
+   }
+ 
+   var module = new Module(filename, parent);
++  module.name = request;
+ 
+   if (isMain) {
+     process.mainModule = module;
+@@ -309,7 +322,11 @@
    var hadException = true;
  
    try {
@@ -48,7 +56,7 @@
      hadException = false;
    } finally {
      if (hadException) {
-@@ -373,8 +389,11 @@
+@@ -373,8 +390,11 @@
  // Returns exception if any
  Module.prototype._compile = function(content, filename) {
    var self = this;
@@ -60,7 +68,7 @@
  
    function require(path) {
      return self.require(path);
-@@ -434,7 +453,10 @@
+@@ -434,7 +454,10 @@
    }
  
    // create wrapper function
@@ -72,7 +80,18 @@
  
    var compiledWrapper = runInThisContext(wrapper, filename, true);
    if (global.v8debug) {
-@@ -470,8 +492,7 @@
+@@ -453,7 +476,9 @@
+     }
+   }
+   var args = [self.exports, require, self, filename, dirname];
+-  return compiledWrapper.apply(self.exports, args);
++  var result = compiledWrapper.apply(self.exports, args);
++  __avatar.loader.onLoad(self.name, filename);
++  return result;
+ };
+ 
+ 
+@@ -470,8 +495,7 @@
  
  // Native extension for .js
  Module._extensions['.js'] = function(module, filename) {
@@ -82,7 +101,7 @@
  };
  
  
-@@ -508,7 +529,9 @@
+@@ -508,7 +532,9 @@
      var homeDir = process.env.HOME;
    }
  

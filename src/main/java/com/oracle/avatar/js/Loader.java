@@ -92,8 +92,9 @@ public abstract class Loader {
     /**
      * Called to inform loader on success.
      * @param id The module id.
+     * @param pathOrUrl The file system path or URL.
      */
-    public void loadSucceeded(final String id) {
+    public void onLoad(final String id, final Object pathOrUrl) {
     }
 
     /**
