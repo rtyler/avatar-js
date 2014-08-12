@@ -63,6 +63,9 @@ import jdk.nashorn.api.scripting.ScriptObjectMirror;
 import jdk.nashorn.internal.runtime.ECMAException;
 import jdk.nashorn.internal.runtime.ScriptObject;
 
+import com.oracle.avatar.js.metrics.MetricsService;
+import com.oracle.avatar.js.metrics.spi.DurationEvent;
+
 public final class EventLoop {
 
     private final String version;
@@ -87,8 +90,7 @@ public final class EventLoop {
     private Callback uncaughtExceptionHandler = null;
     private Throwable pendingException = null;
     private boolean syncEventsProcessing = true;
-    private long tickStart = 0;
-    private long tickDuration = 0;
+    private DurationEvent tickEvent;
     private ScriptObjectMirror domain;
 
     public static final class Handle implements AutoCloseable {
@@ -454,17 +456,22 @@ public final class EventLoop {
 
         LibUV.chdir(workDir);
         LOG = logger("eventloop");
-
+        
         checkHandle = this.handleFactory.newCheckHandle();
-        tickStart = System.currentTimeMillis();
-        checkHandle.setCheckCallback(new CheckCallback() {
-            @Override
-            public void onCheck(int status) throws Exception {
-                final long now = System.currentTimeMillis();
-                tickDuration = now - tickStart;
-                tickStart = now;
-            }
-        });
+        tickEvent = MetricsService.getInstance().newDurationEvent("EventLoop Tick Duration");
+        if (tickEvent != null) {
+            tickEvent.reset();
+            tickEvent.begin();
+            checkHandle.setCheckCallback(new CheckCallback() {
+                @Override
+                public void onCheck(int status) throws Exception {
+                    tickEvent.end();
+                    tickEvent.commit();
+                    tickEvent.reset();
+                    tickEvent.begin();
+                }
+            });
+        }
         checkHandle.start();
         checkHandle.unref();
 
