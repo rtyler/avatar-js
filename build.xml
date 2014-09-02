@@ -614,8 +614,9 @@
         </jar>
     </target>
 
-    <macrodef name="run-tests" description="run tests in dir">
+    <macrodef name="run-test" description="run tests in dir">
         <attribute name="dir"/>
+        <element name="test-args" optional="true"/>
         <sequential>
             <java classname="runner.TestRunner" failonerror="true" fork="true" dir=".">
                 <classpath>
@@ -624,29 +625,57 @@
                     <path refid="javac.test.classpath.id"/>
                 </classpath>
                 <jvmarg value="-Xverify:all"/>
-                <!-- TODO: temporarily disabled due to https://bugs.openjdk.java.net/browse/JDK-8046668
                 <jvmarg value="-Xcheck:jni"/>
-                -->
                 <jvmarg value="-Xmx4g"/>
                 <jvmarg value="-ea"/>
                 <sysproperty key="java.library.path" value="${dist.dir}"/>
-                <arg line="@{dir}"/>
+                <test-args/>
+                <arg value="@{dir}"/>
             </java>
         </sequential>
     </macrodef>
 
-    <target name="test-simple" depends="compile-tests">
-        <run-tests dir="test/simple"/>
+    <condition property="test.args.available">
+        <isset property="test.args"/>
+    </condition>
+
+    <target name="test-simple" depends="test-simple-noargs, test-simple-args"/>
+    <target name="test-simple-noargs" depends="compile-tests" unless="test.args.available">
+        <run-test dir="test/simple"/>
+    </target>
+    <target name="test-simple-args" depends="compile-tests" if="test.args.available">
+        <run-test dir="test/simple">
+            <test-args>
+                <arg line="${test.args}"/>
+            </test-args>
+        </run-test>
     </target>
 
-    <target name="test-pummel" depends="compile-tests">
-        <run-tests dir="test/pummel"/>
+    <target name="test-pummel" depends="test-pummel-noargs, test-pummel-args"/>
+    <target name="test-pummel-noargs" depends="compile-tests" unless="test.args.available">
+        <run-test dir="test/pummel"/>
+    </target>
+    <target name="test-pummel-args" depends="compile-tests" if="test.args.available">
+        <run-test dir="test/pummel">
+            <test-args>
+                <arg line="${test.args}"/>
+            </test-args>
+        </run-test>
     </target>
 
-    <target name="test-crypto" depends="compile-tests">
-        <run-tests dir="test/crypto"/>
+    <target name="test-crypto" depends="test-crypto-noargs, test-crypto-args"/>
+    <target name="test-crypto-noargs" depends="compile-tests" unless="test.args.available">
+        <run-test dir="test/crypto"/>
+    </target>
+    <target name="test-crypto-args" depends="compile-tests" if="test.args.available">
+        <run-test dir="test/crypto">
+            <test-args>
+                <arg line="${test.args}"/>
+            </test-args>
+        </run-test>
     </target>
 
-    <target name="test" depends="test-simple, test-pummel, test-crypto"/>
+
+    <target name="test-node" depends="test-simple, test-pummel, test-crypto"/>
 
 </project>
