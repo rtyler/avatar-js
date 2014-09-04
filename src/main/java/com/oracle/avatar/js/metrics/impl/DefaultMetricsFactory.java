@@ -23,33 +23,33 @@
  * questions.
  */
 
-package com.oracle.avatar.js.metrics;
+package com.oracle.avatar.js.metrics.impl;
 
-import java.util.Iterator;
-import java.util.ServiceLoader;
-
-import com.oracle.avatar.js.metrics.impl.DefaultMetricsFactory;
+import com.oracle.avatar.js.metrics.spi.DurationEvent;
 import com.oracle.avatar.js.metrics.spi.MetricsFactory;
 
 /**
- * The MetricsService class loads one of the MetricsFactory implementations available at runtime.
+ * Default implementation of the MetricsFactory interface.
  */
-public final class MetricsService {
+public final class DefaultMetricsFactory implements MetricsFactory {
 
-    private static final MetricsFactory instance;
+    private final boolean enabled;
 
-    static {
-        final Iterator<MetricsFactory> factoryIterator = ServiceLoader.load(MetricsFactory.class).iterator();
-        if (factoryIterator.hasNext()) {
-            instance = factoryIterator.next(); // take the first and only
-        } else {
-            instance = new DefaultMetricsFactory(); // none found, fallback
-        }
+    public DefaultMetricsFactory() {
+        // enabled unless explicitly disabled by setting this env var or sys prop
+        enabled =
+                !Boolean.getBoolean("AVATARJS_METRICS_DISABLED") ||
+                System.getProperty("avatar-js.metrics.disabled") != null ;
     }
 
-    public static MetricsFactory instance() {
-        assert instance != null;
-        return instance;
+    @Override
+    public boolean enabled() {
+        return enabled;
+    }
+
+    @Override
+    public DurationEvent newDurationEvent(String name) {
+        return enabled ? new DefaultDurationEvent(name) : new NullDurationEvent(name);
     }
 
 }

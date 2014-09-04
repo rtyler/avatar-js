@@ -23,33 +23,68 @@
  * questions.
  */
 
-package com.oracle.avatar.js.metrics;
+package com.oracle.avatar.js.metrics.impl;
 
-import java.util.Iterator;
-import java.util.ServiceLoader;
-
-import com.oracle.avatar.js.metrics.impl.DefaultMetricsFactory;
-import com.oracle.avatar.js.metrics.spi.MetricsFactory;
+import com.oracle.avatar.js.metrics.spi.DurationEvent;
 
 /**
- * The MetricsService class loads one of the MetricsFactory implementations available at runtime.
+ * Empty implementation of the DurationEvent interface.
  */
-public final class MetricsService {
+public final class NullDurationEvent implements DurationEvent {
 
-    private static final MetricsFactory instance;
+    private final String name;
 
-    static {
-        final Iterator<MetricsFactory> factoryIterator = ServiceLoader.load(MetricsFactory.class).iterator();
-        if (factoryIterator.hasNext()) {
-            instance = factoryIterator.next(); // take the first and only
-        } else {
-            instance = new DefaultMetricsFactory(); // none found, fallback
-        }
+    /**
+     * Constructor
+     * @param name The name of the event
+     */
+    public NullDurationEvent(final String name) {
+        this.name = name;
     }
 
-    public static MetricsFactory instance() {
-        assert instance != null;
-        return instance;
+    /**
+     * Sets the start time for the event
+     */
+    @Override
+    public void begin() {
+    }
+
+    /**
+     * Sets the end time for the event
+     */
+    @Override
+    public void end() {
+    }
+
+    /**
+     * Ends the event and calculates the duration
+     */
+    @Override
+    public void commit() {
+    }
+
+    /**
+     * Resets the counters used for calculating the duration of the event
+     */
+    @Override
+    public void reset() {
+    }
+
+    /**
+     * Returns the duration for this event in milliseconds
+     *
+     * @return The duration
+     */
+    public long duration() {
+        return 0;
+    }
+
+    /**
+     * Get the name for this event
+     * @return The event name
+     */
+    public String name() {
+        return this.name;
     }
 
 }
