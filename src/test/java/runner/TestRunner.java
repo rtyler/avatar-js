@@ -133,7 +133,7 @@ public class TestRunner {
         final List<String> paths = new ArrayList<>();
         for (int i=0; i < args.length; i++) {
             final String root = args[i];
-            if (root.matches("^-\\w*")) {
+            if (root.startsWith("-")) {
                 switch (root) {
                     case "-nofork": fork = false; break;
                     case "-noassert": assertions = false; break;
