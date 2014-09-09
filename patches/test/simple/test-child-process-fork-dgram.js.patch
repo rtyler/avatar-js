@@ -1,6 +1,6 @@
---- ../node/test/simple/test-child-process-fork-dgram.js	2013-08-08 18:44:23 -0700
-+++ test/simple/test-child-process-fork-dgram.js	2014-06-06 11:33:54 -0700
-@@ -27,6 +27,7 @@
+--- ../node/test/simple/test-child-process-fork-dgram.js	2014-09-09 10:48:40.124421023 -0700
++++ test/simple/test-child-process-fork-dgram.js	2014-09-09 11:12:45.423906087 -0700
+@@ -41,6 +41,7 @@
  if (process.platform === 'win32') {
    console.error('Sending dgram sockets to child processes not supported');
    process.exit(0);
@@ -8,10 +8,10 @@
  }
  
  if (process.argv[2] === 'child') {
-@@ -86,7 +87,7 @@
-           }
-         }
-       );
+@@ -103,7 +104,7 @@
+         shutdown();
+       }
+ 
 -    }, 1);
 +    }, 100);
    };

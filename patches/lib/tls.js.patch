@@ -1,6 +1,6 @@
---- ../node/lib/tls.js	2013-12-12 09:46:21 -0800
-+++ src/main/js/lib/tls.js	2013-12-12 10:20:39 -0800
-@@ -359,7 +359,10 @@
+--- ../node/lib/tls.js	2014-09-09 10:48:40.116414625 -0700
++++ src/main/js/lib/tls.js	2014-09-09 11:07:25.003874312 -0700
+@@ -361,7 +361,10 @@
  
      // Handle and report errors
      if (this.pair.ssl && this.pair.ssl.error) {
@@ -12,7 +12,7 @@
      }
  
      // Force SSL_read call to cycle some states/data inside OpenSSL
-@@ -460,6 +463,17 @@
+@@ -462,6 +465,17 @@
        this.pair.error();
        break;
      }
@@ -30,7 +30,7 @@
    } while (read > 0 &&
             !this._buffer.isFull &&
             bytesRead < size &&
-@@ -1133,7 +1147,8 @@
+@@ -1130,7 +1144,8 @@
      passphrase: self.passphrase,
      cert: self.cert,
      ca: self.ca,
@@ -40,7 +40,7 @@
      secureProtocol: self.secureProtocol,
      secureOptions: self.secureOptions,
      crl: self.crl,
-@@ -1148,6 +1163,12 @@
+@@ -1145,6 +1160,12 @@
  
    // constructor call
    net.Server.call(this, function(socket) {
@@ -53,7 +53,7 @@
      var creds = crypto.createCredentials(null, sharedCreds.context);
  
      var pair = new SecurePair(creds,
-@@ -1344,6 +1365,10 @@
+@@ -1341,6 +1362,10 @@
                                cleartext: options.cleartext,
                                encrypted: options.encrypted
                              });

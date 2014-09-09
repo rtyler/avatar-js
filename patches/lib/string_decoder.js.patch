@@ -1,6 +1,6 @@
---- ../node/lib/string_decoder.js	2013-04-30 22:00:43.433305623 -0700
-+++ src/main/js/lib/string_decoder.js	2013-05-30 13:33:21.987526602 -0700
-@@ -30,15 +30,13 @@
+--- ../node/lib/string_decoder.js	2014-09-09 10:48:40.116414625 -0700
++++ src/main/js/lib/string_decoder.js	2014-09-09 12:44:26.311822716 -0700
+@@ -38,15 +38,13 @@
    assertEncoding(encoding);
    switch (this.encoding) {
      case 'utf8':
@@ -21,10 +21,10 @@
      case 'base64':
        // Base-64 stores 3 bytes in 4 chars, and pads the remainder.
        this.surrogateSize = 3;
-@@ -54,6 +52,27 @@
+@@ -66,6 +64,27 @@
    this.charLength = 0;
  };
-
+ 
 +function stringWrite(buffer) {
 +  // some old tests pass string.
 +  if(!Buffer.isBuffer(buffer)) {
@@ -46,19 +46,6 @@
 +
 +  return res;
 +}
-
- StringDecoder.prototype.write = function(buffer) {
-   var charStr = '';
-@@ -176,12 +195,6 @@
-   return buffer.toString(this.encoding);
- }
-
--function utf16DetectIncompleteChar(buffer) {
--  var incomplete = this.charReceived = buffer.length % 2;
--  this.charLength = incomplete ? 2 : 0;
--  return incomplete;
--}
--
- function base64DetectIncompleteChar(buffer) {
-   var incomplete = this.charReceived = buffer.length % 3;
-   this.charLength = incomplete ? 3 : 0;
+ 
+ // write decodes the given buffer and returns it as JS string that is
+ // guaranteed to not contain any partial multi-byte characters. Any partial

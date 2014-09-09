@@ -1,6 +1,6 @@
---- ../node/test/common.js	2013-08-22 13:48:54.000000000 +0200
-+++ test/common.js	2013-09-20 09:37:44.000000000 +0200
-@@ -55,7 +55,7 @@
+--- ../node/test/common.js	2014-09-09 10:48:40.124421023 -0700
++++ test/common.js	2014-09-09 11:07:25.839900413 -0700
+@@ -67,7 +67,7 @@
  exports.ddCommand = function(filename, kilobytes) {
    if (process.platform === 'win32') {
      var p = path.resolve(exports.fixturesDir, 'create-file.js');
@@ -9,7 +9,7 @@
             filename + '" ' + (kilobytes * 1024);
    } else {
      return 'dd if=/dev/zero of="' + filename + '" bs=1024 count=' + kilobytes;
-@@ -135,7 +135,8 @@
+@@ -147,7 +147,8 @@
      knownGlobals.push(Uint32Array);
      knownGlobals.push(Float32Array);
      knownGlobals.push(Float64Array);
@@ -19,7 +19,7 @@
    }
  
    for (var x in global) {
-@@ -198,3 +199,12 @@
+@@ -210,3 +211,12 @@
      return fn.apply(this, arguments);
    };
  };

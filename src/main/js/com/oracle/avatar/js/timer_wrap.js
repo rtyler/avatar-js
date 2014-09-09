@@ -24,6 +24,7 @@
  */
 
 (function(exports) {
+
     var TimerHandle = Packages.com.oracle.libuv.handles.TimerHandle;
     var loop = __avatar.eventloop.loop();
     var factory = __avatar.eventloop.handleFactory();
@@ -43,6 +44,10 @@
                 }
             }
         });
+    }
+
+    Timer.now = function() {
+        return TimerHandle.now(loop);
     }
 
     Timer.prototype.start = function(timeout, repeat) {
