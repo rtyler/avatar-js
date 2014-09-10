@@ -1,5 +1,5 @@
---- ../nodejs/test/simple/test-repl.js	2013-12-10 12:00:28.170682600 -0800
-+++ test/simple/test-repl.js	2013-12-10 12:08:06.413349900 -0800
+--- ../node/test/simple/test-repl.js	2013-09-09 09:17:35.003856127 -0700
++++ test/simple/test-repl.js	2014-09-10 12:33:57.650007560 -0700
 @@ -131,40 +131,42 @@
      // invalid input to JSON.parse error is special case of syntax error,
      // should throw
@@ -64,3 +64,9 @@
      { client: client_unix, send: 'blah()',
        expect: '1\n' + prompt_unix },
      // Functions should not evaluate twice (#2773)
+@@ -335,4 +337,4 @@
+ 
+ timer = setTimeout(function() {
+   assert.fail('Timeout');
+-}, 5000);
++}, 10000);
