@@ -25,7 +25,7 @@ Build Instructions
 
    1. `git clone https://github.com/joyent/node.git source`
    2. `cd source`
-   3. `git checkout v0.10.28` <br/>
+   3. `git checkout v0.10.31` <br/>
       _tip_: run `git pull` to refresh the repo if you get an error saying that this version is unknown
    4. `cd ..`
 

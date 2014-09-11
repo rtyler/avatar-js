@@ -120,7 +120,7 @@ public final class Server implements AutoCloseable {
     public static void main(final String... args) throws Throwable {
         final Server server = new Server();
         server.run(args);
-        System.exit(server.holder.getExitCode());
+        System.exit(server.getExitCode());
     }
 
     public Server() throws Exception {
@@ -228,6 +228,10 @@ public final class Server implements AutoCloseable {
                 keepAlive.send();
             }
         }
+    }
+
+    public int getExitCode() {
+        return holder.getExitCode();
     }
 
     private void runSystemScript(final SystemScriptRunner... scripts) throws FileNotFoundException, ScriptException {

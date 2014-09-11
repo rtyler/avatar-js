@@ -31,7 +31,8 @@ var stdout = process.stdout;
 var stderr = process.stderr;
 
 var args = process.argv;
-if (args.length < 3) {
+var help = args.indexOf('-help') >= 0 || args.indexOf('-?') >= 0;
+if (args.length < 3 || help) {
     stderr.write('Usage: ' + args[0] + ' ' + args[1] + ' [options] <args>\n');
     stderr.write(' where options may be\n');
     stderr.write('  -nocolor to disable colorized output (for non-interactive runs)\n');
@@ -43,6 +44,7 @@ if (args.length < 3) {
     stderr.write('  -timeout s to specify the timeout for each test (default: 120s)\n');
     stderr.write('  -drip to enable use of drip to reduce jvm startup time (disables assertions and logging)\n');
     stderr.write('  -mx N to specify the maximum jvm heap size for each test (default: 1g)\n');
+    stderr.write('  -jar specifies location of the jar file (default: dist/avatar-js.jar)\n');
     stderr.write(' <args> is some combination of node tests and/or directories\n');
     stderr.write('directories are searched for node tests matching "test-*.js"\n');
     process.exit(-1);
@@ -56,6 +58,10 @@ var maxheap = '1g';
 var assertions = true;
 var deprecations = false;
 var redirect = true;
+
+var target = path.join(process.cwd(), 'dist');
+var jar = path.join(target, 'avatar-js.jar');
+
 // ansi tty escape codes only work with node.js on windows
 var colorize = !(process.platform === 'win32' && typeof java != 'undefined');
 
@@ -92,6 +98,7 @@ for (var i=0; i < testlen; i++) {
             case '-drip': drip = true; break;
             case '-delay': delay = Number(tests[++i]); break;
             case '-mx': maxheap = tests[++i]; break;
+            case '-jar': jar = tests[++i]; break;
             case '-timeout': timeout = Number(tests[++i]) * 1000; break;
             default: jvmArgs.push(root);
         }
@@ -140,8 +147,6 @@ function mkdirsSync(p, target) {
 var tmp = path.join(process.cwd(), 'test', 'tmp');
 mkdirsSync(tmp, process.cwd());
 
-var target = path.join(process.cwd(), 'dist');
-var jar = path.join(target, 'avatar-js.jar');
 var results = path.join(process.cwd(), 'test-output');
 mkdirsSync(results, process.cwd());
 
