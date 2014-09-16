@@ -10,10 +10,8 @@ test-http-curl-chunk-problem.js                 https://java.net/jira/browse/AVA
 test-http-incoming-pipelined-socket-destroy.js  https://java.net/jira/browse/AVATAR_JS-128
 test-http-pipeline-flood.js                     TODO
 test-https-eof-for-eom.js                       TODO
-test-https-foafssl.js                           TODO
 test-listen-fd-ebadf.js                         https://java.net/jira/browse/AVATAR_JS-129
 test-regress-GH-3542.js                         https://java.net/jira/browse/AVATAR_JS-131
 test-regress-GH-746.js                          https://java.net/jira/browse/AVATAR_JS-132
 test-stdout-close-unref.js                      https://java.net/jira/browse/AVATAR_JS-133
 test-stream2-stderr-sync.js                     https://java.net/jira/browse/AVATAR_JS-134
-test-tls-server-verify.js                       https://java.net/jira/browse/AVATAR_JS-135
