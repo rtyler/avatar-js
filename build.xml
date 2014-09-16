@@ -153,6 +153,154 @@
         <mkdir dir="${test.dir}/tmp"/>
     </target>
 
+    <macrodef name="openssl">
+        <attribute name="algo"/>
+        <attribute name="arg"/>
+        <attribute name="key"/>
+        <sequential>
+            <echo>generating @{key}</echo>
+            <exec executable="openssl" dir="." failonerror="true">
+                <arg value="@{algo}"/>
+                <arg value="@{arg}"/>
+                <arg value="-in"/>
+                <arg value="${source.home}/test/fixtures/@{key}"/>
+                <arg value="-inform"/>
+                <arg value="pem"/>
+                <arg value="-out"/>
+                <arg value="crypto/fixtures/@{key}"/>
+                <arg value="-outform"/>
+                <arg value="pem"/>
+                <arg value="-nocrypt"/>
+            </exec>
+        </sequential>
+    </macrodef>
+
+    <target name="regenerate-keys" depends="init">
+        <openssl algo="pkcs8" arg="-topk8" key="test_key.pem"/>
+        <openssl algo="pkcs8" arg="-topk8" key="test_rsa_privkey.pem"/>
+        <openssl algo="pkcs8" arg="-topk8" key="test_rsa_privkey_2.pem"/>
+
+        <echo>generating test_rsa_pubkey_2.pem</echo>
+        <exec executable="openssl" dir="." failonerror="true">
+            <arg value="rsa"/>
+            <arg value="-in"/>
+            <arg value="crypto/fixtures/test_rsa_privkey_2.pem"/>
+            <arg value="-inform"/>
+            <arg value="pem"/>
+            <arg value="-out"/>
+            <arg value="crypto/fixtures/test_rsa_pubkey_2.pem"/>
+            <arg value="-outform"/>
+            <arg value="pem"/>
+            <arg value="-pubout"/>
+        </exec>
+
+        <echo>generating dsaparam.pem</echo>
+        <exec executable="openssl" dir="." failonerror="true">
+            <arg value="dsaparam"/>
+            <arg value="-out"/>
+            <arg value="dsaparam.pem"/>
+            <arg value="1024"/>
+        </exec>
+
+        <echo>generating test_dsa_privkey.pem</echo>
+        <exec executable="openssl" dir="." failonerror="true">
+            <arg value="gendsa"/>
+            <arg value="-out"/>
+            <arg value="crypto/fixtures/test_dsa_privkey.pem"/>
+            <arg value="dsaparam.pem"/>
+        </exec>
+
+        <openssl algo="pkcs8" arg="-topk8" key="test_dsa_privkey.pem"/>
+
+        <echo>generating test_dsa_pubkey.pem</echo>
+        <exec executable="openssl" dir="." failonerror="true">
+            <arg value="dsa"/>
+            <arg value="-in"/>
+            <arg value="${source.home}/test/fixtures/test_dsa_privkey.pem"/>
+            <arg value="-out"/>
+            <arg value="crypto/fixtures/test_dsa_pubkey.pem"/>
+            <arg value="-outform"/>
+            <arg value="pem"/>
+            <arg value="-pubout"/>
+        </exec>
+
+        <mkdir dir="crypto/fixtures/keys"/>
+        <openssl algo="pkcs8" arg="-topk8" key="keys/agent1-key.pem"/>
+        <openssl algo="pkcs8" arg="-topk8" key="keys/agent2-key.pem"/>
+        <openssl algo="pkcs8" arg="-topk8" key="keys/agent3-key.pem"/>
+        <openssl algo="pkcs8" arg="-topk8" key="keys/agent4-key.pem"/>
+
+        <exec executable="openssl" dir="." failonerror="true">
+            <arg value="pkcs8"/>
+            <arg value="-topk8"/>
+            <arg value="-in"/>
+            <arg value="${source.home}/test/fixtures/pass-key.pem"/>
+            <arg value="-inform"/>
+            <arg value="pem"/>
+            <arg value="-out"/>
+            <arg value="crypto/fixtures/pass-key.pem"/>
+            <arg value="-outform"/>
+            <arg value="pem"/>
+            <arg value="-nocrypt"/>
+            <arg value="-passin"/>
+            <arg value="pass:passphrase"/>
+        </exec>
+
+        <openssl algo="pkcs8" arg="-topk8" key="agent.key"/>
+
+        <echo>generating altnames-agent-key-trans.pem</echo>
+        <exec executable="openssl" dir="." failonerror="true">
+            <arg value="genrsa"/>
+            <arg value="-out"/>
+            <arg value="crypto/altnames/altnames-agent-key-trans.pem"/>
+            <arg value="1024"/>
+        </exec>
+
+        <exec executable="openssl" dir="." failonerror="true">
+            <arg value="pkcs8"/>
+            <arg value="-topk8"/>
+            <arg value="-in"/>
+            <arg value="crypto/altnames/altnames-agent-key-trans.pem"/>
+            <arg value="-inform"/>
+            <arg value="pem"/>
+            <arg value="-out"/>
+            <arg value="crypto/altnames/altnames-agent-key.pem"/>
+            <arg value="-outform"/>
+            <arg value="pem"/>
+            <arg value="-nocrypt"/>
+        </exec>
+
+        <exec executable="openssl" dir="." failonerror="true">
+            <arg value="req"/>
+            <arg value="-new"/>
+            <arg value="-key"/>
+            <arg value="crypto/altnames/altnames-agent-key.pem"/>
+            <arg value="-out"/>
+            <arg value="crypto/altnames/altnames-agent-key.csr"/>
+            <arg value="-config"/>
+            <arg value="crypto/altnames/altnames.cnf"/>
+            <arg value="-batch"/>
+        </exec>
+
+        <exec executable="openssl" dir="." failonerror="true">
+            <arg value="x509"/>
+            <arg value="-req"/>
+            <arg value="-days"/>
+            <arg value="-999"/>
+            <arg value="-in"/>
+            <arg value="crypto/altnames/altnames-agent-key.csr"/>
+            <arg value="-signkey"/>
+            <arg value="crypto/altnames/altnames-agent-key.pem"/>
+            <arg value="-out"/>
+            <arg value="crypto/altnames/altnames-agent.crt"/>
+            <arg value="-extensions"/>
+            <arg value="v3_req"/>
+            <arg value="-extfile"/>
+            <arg value="crypto/altnames/altnames.cnf"/>
+        </exec>
+
+    </target>
+
     <target name="configure-unix" depends="config-gyp" if="isUnix">
         <exec executable="python" dir="." failonerror="true">
             <arg value="${source.home}/tools/gyp/gyp_main.py"/>
