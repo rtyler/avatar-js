@@ -41,12 +41,15 @@ public class LogQueue {
 
     private final AtomicBoolean logThreadStarted = new AtomicBoolean(false);
 
-    private final Thread logThread = logThreadFactory.newThread(() -> {
-        while (true) {
-            try {
-                logQueue.take().write();
-            } catch (final IOException | InterruptedException ignore) {
-                return;
+    private final Thread logThread = logThreadFactory.newThread(new Runnable() {
+        @Override
+        public void run() {
+            while (true) {
+                try {
+                    logQueue.take().write();
+                } catch (final IOException | InterruptedException ignore) {
+                    return;
+                }
             }
         }
     });
