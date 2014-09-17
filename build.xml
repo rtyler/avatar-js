@@ -524,7 +524,6 @@
         <apply-diff src="test/simple" mod="${test.dir}/simple" name="test-tls-peer-certificate-multi-keys.js"/>
         <apply-diff src="test/simple" mod="${test.dir}/simple" name="test-tls-request-timeout.js"/>
         <apply-diff src="test/simple" mod="${test.dir}/simple" name="test-tls-server-missing-options.js"/>
-        <apply-diff src="test/simple" mod="${test.dir}/simple" name="test-tls-server-verify.js"/>
         <apply-diff src="test/simple" mod="${test.dir}/crypto" name="test-tls-getcipher.js"/>
         <apply-diff src="test/simple" mod="${test.dir}/crypto" name="test-tls-honorcipherorder.js"/>
         <!-- crypto tests -->
@@ -644,7 +643,6 @@
         <apply-patch-file target="${test.dir}/simple" dir="test/simple" name="test-tls-peer-certificate-multi-keys.js"/>
         <apply-patch-file target="${test.dir}/simple" dir="test/simple" name="test-tls-request-timeout.js"/>
         <apply-patch-file target="${test.dir}/simple" dir="test/simple" name="test-tls-server-missing-options.js"/>
-        <apply-patch-file target="${test.dir}/simple" dir="test/simple" name="test-tls-server-verify.js"/>
         <apply-patch-file target="${test.dir}/crypto" dir="test/crypto" name="test-tls-getcipher.js"/>
         <apply-patch-file target="${test.dir}/crypto" dir="test/crypto" name="test-tls-honorcipherorder.js"/>
         <!-- crypto tests -->
