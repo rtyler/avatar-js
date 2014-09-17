@@ -198,7 +198,7 @@
         <exec executable="openssl" dir="." failonerror="true">
             <arg value="dsaparam"/>
             <arg value="-out"/>
-            <arg value="dsaparam.pem"/>
+            <arg value="${java.io.tmpdir}/dsaparam.pem"/>
             <arg value="1024"/>
         </exec>
 
@@ -206,17 +206,29 @@
         <exec executable="openssl" dir="." failonerror="true">
             <arg value="gendsa"/>
             <arg value="-out"/>
-            <arg value="crypto/fixtures/test_dsa_privkey.pem"/>
-            <arg value="dsaparam.pem"/>
+            <arg value="${java.io.tmpdir}/test_dsa_privkey.pem"/>
+            <arg value="${java.io.tmpdir}/dsaparam.pem"/>
         </exec>
 
-        <openssl algo="pkcs8" arg="-topk8" key="test_dsa_privkey.pem"/>
+        <exec executable="openssl" dir="." failonerror="true">
+            <arg value="pkcs8"/>
+            <arg value="-topk8"/>
+            <arg value="-in"/>
+            <arg value="${java.io.tmpdir}/test_dsa_privkey.pem"/>
+            <arg value="-inform"/>
+            <arg value="pem"/>
+            <arg value="-out"/>
+            <arg value="crypto/fixtures/test_dsa_privkey.pem"/>
+            <arg value="-outform"/>
+            <arg value="pem"/>
+            <arg value="-nocrypt"/>
+        </exec>
 
         <echo>generating test_dsa_pubkey.pem</echo>
         <exec executable="openssl" dir="." failonerror="true">
             <arg value="dsa"/>
             <arg value="-in"/>
-            <arg value="${source.home}/test/fixtures/test_dsa_privkey.pem"/>
+            <arg value="crypto/fixtures/test_dsa_privkey.pem"/>
             <arg value="-out"/>
             <arg value="crypto/fixtures/test_dsa_pubkey.pem"/>
             <arg value="-outform"/>
@@ -252,7 +264,7 @@
         <exec executable="openssl" dir="." failonerror="true">
             <arg value="genrsa"/>
             <arg value="-out"/>
-            <arg value="crypto/altnames/altnames-agent-key-trans.pem"/>
+            <arg value="${java.io.tmpdir}/altnames-agent-key-trans.pem"/>
             <arg value="1024"/>
         </exec>
 
@@ -260,7 +272,7 @@
             <arg value="pkcs8"/>
             <arg value="-topk8"/>
             <arg value="-in"/>
-            <arg value="crypto/altnames/altnames-agent-key-trans.pem"/>
+            <arg value="${java.io.tmpdir}/altnames-agent-key-trans.pem"/>
             <arg value="-inform"/>
             <arg value="pem"/>
             <arg value="-out"/>
