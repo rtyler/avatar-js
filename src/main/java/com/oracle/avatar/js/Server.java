@@ -226,6 +226,8 @@ public final class Server implements AutoCloseable {
         if (closed.compareAndSet(false, true)) {
             if (keepAlive != null) {
                 keepAlive.send();
+            } else {
+                eventLoop.interrupt();
             }
         }
     }
