@@ -594,7 +594,17 @@ exports.dlopen = function(module) {
     throw new Error('dlopen is not supported, cannot load ' + module);
 }
 
-exports.versions = {openssl: true, node: eventloop.version()};
+exports.versions = {
+    openssl: true,
+    node: eventloop.version(),
+    uv: com.oracle.libuv.LibUV.version(),
+    http_parser: new com.oracle.httpparser.HttpParser().version(),
+    java: java.lang.System.getProperty('java.version'),
+    java_class: java.lang.System.getProperty('java.class.version'),
+    java_spec: java.lang.System.getProperty('java.specification.version'),
+    java_vm: java.lang.System.getProperty('java.vm.version'),
+    java_vm_spec: java.lang.System.getProperty('java.vm.specification.version')
+};
 
 // tls_sni will be true, tls_npn is not supported by Java binding
 exports.features = {tls_sni: true};
