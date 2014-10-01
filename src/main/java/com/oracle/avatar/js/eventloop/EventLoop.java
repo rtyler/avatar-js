@@ -38,6 +38,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 
 import javax.script.ScriptException;
 
@@ -83,6 +84,7 @@ public final class EventLoop {
     private final AsyncHandle interruptMainLoopHandle;
     private final Thread mainThread;
     private final AtomicBoolean stopped = new AtomicBoolean(false);
+    private volatile Consumer<Integer> interruptCallback;
 
     private Callback isHandlerRegistered = null;
     private Callback uncaughtExceptionHandler = null;
@@ -258,7 +260,8 @@ public final class EventLoop {
         }
     }
 
-    public void interrupt() {
+    public void interrupt(final Consumer<Integer> callback) {
+        interruptCallback = callback;
         interruptMainLoopHandle.send();
     }
 
@@ -505,6 +508,13 @@ public final class EventLoop {
         interruptMainLoopHandle.setAsyncCallback(new AsyncCallback() {
             @Override
             public void onSend(int status) throws Exception {
+                if (interruptCallback != null) {
+                    try {
+                        interruptCallback.accept(status);
+                    } catch (Throwable t) {
+                        handleCallbackException(t);
+                    }
+                }
                 stop();
             }
         });

@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 
 import javax.script.Bindings;
 import javax.script.Compilable;
@@ -183,7 +184,6 @@ public final class Server implements AutoCloseable {
                 @Override
                 public void onSend(int status) throws Exception {
                     keepAlive.close();
-                    eventLoop.interrupt();
                 }
             });
             this.keepAlive = keepAlive;
@@ -225,26 +225,19 @@ public final class Server implements AutoCloseable {
     @Override
     public void close() throws FileNotFoundException, ScriptException {
         if (closed.compareAndSet(false, true)) {
-            Exception failure = null;
-            try {
-                runSystemFinalizationScripts();
-            } catch (Exception e) {
-                failure = e;
-            }
             if (keepAlive != null) {
                 keepAlive.send();
-            } else {
-                eventLoop.interrupt();
             }
-            if (failure != null) {
-                if (failure instanceof FileNotFoundException) {
-                    throw (FileNotFoundException) failure;
-                } else if (failure instanceof ScriptException) {
-                    throw (ScriptException) failure;
-                } else {
-                    throw new RuntimeException(failure);
+            eventLoop.interrupt(new Consumer<Integer>() {
+                @Override
+                public void accept(Integer integer) {
+                    try {
+                        runSystemFinalizationScripts();
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
                 }
-            }
+            });
         }
     }
 
@@ -423,7 +416,7 @@ public final class Server implements AutoCloseable {
         boolean dumpVersion = false;
         boolean dumpUVVersion = false;
         String unknownArg = null;
-        for (int i=0; i < args.size(); i++) {
+        for (int i = 0; i < args.size(); i++) {
             final String arg = args.get(i);
             if ("-h".equals(arg) || "--help".equals(arg)) {
                 dumpHelp = true;
@@ -651,7 +644,7 @@ public final class Server implements AutoCloseable {
 
         public void installNativeModule(Object nativeModule) {
             checkPermission();
-            if(this.nativeModule != null) {
+            if (this.nativeModule != null) {
                 throw new RuntimeException("NativeModule already set");
             }
             this.nativeModule = nativeModule;
