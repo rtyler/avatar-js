@@ -256,18 +256,12 @@ public class TestRunner {
         final AtomicBoolean passed = new AtomicBoolean(false);
         final long start = System.currentTimeMillis();
         final Thread runner = new Thread(() -> {
-            Server server = null;
-            try {
-                server = new Server();
+            try (final Server server = new Server()) {
                 server.run(testName);
                 passed.set(true);
             } catch (Throwable throwable) {
                 passed.set(false);
                 failure.set(throwable);
-            } finally {
-                if (server != null) {
-                    server.close();
-                }
             }
         }, testName + " runner");
         runner.start();

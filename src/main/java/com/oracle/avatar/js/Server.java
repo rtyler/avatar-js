@@ -103,6 +103,7 @@ public final class Server implements AutoCloseable {
     private final Logger log;
     private final SecureHolder holder;
     private final AsyncHandle keepAlive;
+    private final AtomicBoolean finalized = new AtomicBoolean(false);
     private final AtomicBoolean closed = new AtomicBoolean(false);
     private final Callback listener;
 
@@ -222,12 +223,27 @@ public final class Server implements AutoCloseable {
     }
 
     @Override
-    public void close() {
+    public void close() throws FileNotFoundException, ScriptException {
         if (closed.compareAndSet(false, true)) {
+            Exception failure = null;
+            try {
+                runSystemFinalizationScripts();
+            } catch (Exception e) {
+                failure = e;
+            }
             if (keepAlive != null) {
                 keepAlive.send();
             } else {
                 eventLoop.interrupt();
+            }
+            if (failure != null) {
+                if (failure instanceof FileNotFoundException) {
+                    throw (FileNotFoundException) failure;
+                } else if (failure instanceof ScriptException) {
+                    throw (ScriptException) failure;
+                } else {
+                    throw new RuntimeException(failure);
+                }
             }
         }
     }
@@ -242,6 +258,13 @@ public final class Server implements AutoCloseable {
                 log.log("loading system script " + scriptRunner.script);
                 scriptRunner.run(context);
             }
+        }
+    }
+
+    private void runSystemFinalizationScripts() throws FileNotFoundException, ScriptException {
+        if (finalized.compareAndSet(false, true)) {
+            // emit the process.exit event
+            runSystemScript(SYSTEM_FINALIZATION_SCRIPTS);
         }
     }
 
@@ -285,7 +308,7 @@ public final class Server implements AutoCloseable {
             if (rootCause != null) {
                 try {
                     // emit the process.exit event
-                    runSystemScript(SYSTEM_FINALIZATION_SCRIPTS);
+                    runSystemFinalizationScripts();
                 } catch (Throwable ex) {
                     if (!eventLoop.handleCallbackException(ex)) {
                         rootCause.addSuppressed(ex);
@@ -315,7 +338,7 @@ public final class Server implements AutoCloseable {
         } finally {
             try {
                 // emit the process.exit event
-                runSystemScript(SYSTEM_FINALIZATION_SCRIPTS);
+                runSystemFinalizationScripts();
             } catch (Throwable ex) {
                 if (rootCause != null) {
                     rootCause.addSuppressed(ex);

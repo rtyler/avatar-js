@@ -140,8 +140,19 @@ public final class EventLoop {
     }
 
     public void nextTickWithDomain(final Callback cb, ScriptObjectMirror evtDomain) {
-        assert Thread.currentThread() == mainThread : "called from non-event thread " + Thread.currentThread().getName();
+        assertMainThread("nextTickWithDomain");
         eventQueue.add(new Event("nextTickWithDomain", evtDomain, cb));
+    }
+
+    private void assertMainThread(final String method) {
+        final Thread current = Thread.currentThread();
+        assert current == mainThread : invalidThreadMessage(method, current);
+    }
+
+    private String invalidThreadMessage(final String methodName, final Thread callingThread) {
+        final String expected = mainThread.getName() + "@" + Integer.toHexString(System.identityHashCode(mainThread));
+        final String actual = callingThread.getName() + "@" + Integer.toHexString(System.identityHashCode(callingThread));
+        return methodName + " called on incorrect thread. Expected " + expected + " but is " + actual;
     }
 
     public void post(final Callback cb, Object... args) {
@@ -153,7 +164,7 @@ public final class EventLoop {
     }
 
     public void run() throws Throwable {
-        assert Thread.currentThread() == mainThread : "called from non-event thread " + Thread.currentThread().getName();
+        assertMainThread("run");
         executor.allowCoreThreadTimeOut(true);
 
         do {
@@ -211,7 +222,7 @@ public final class EventLoop {
 
     private void processEvent(final String name, final Callback callback,
                               final AccessControlContext context, final Object... args) throws Exception {
-        assert Thread.currentThread() == mainThread : "called from non-event thread " + Thread.currentThread().getName();
+        assertMainThread("processEvent");
         assert callback != null : "callback is null for event " + name;
         try {
             if (LOG.enabled()) { LOG.log(Event.toString(name, args)); }
@@ -537,27 +548,27 @@ public final class EventLoop {
     }
 
     public void setDomain(ScriptObjectMirror obj) {
-        assert Thread.currentThread() == mainThread : "called from non-event thread " + Thread.currentThread().getName();
+        assertMainThread("setDomain");
         domain = obj;
     }
 
     public ScriptObjectMirror getDomain() {
-        assert Thread.currentThread() == mainThread : "called from non-event thread " + Thread.currentThread().getName();
+        assertMainThread("getDomain");
         return domain;
     }
 
     public boolean isDisposed(ScriptObjectMirror domain) {
-        assert Thread.currentThread() == mainThread : "called from non-event thread " + Thread.currentThread().getName();
+        assertMainThread("isDisposed");
         return Boolean.TRUE.equals(domain.getMember("_disposed"));
     }
 
     public void enterDomain(ScriptObjectMirror domain) {
-        assert Thread.currentThread() == mainThread : "called from non-event thread " + Thread.currentThread().getName();
+        assertMainThread("enterDomain");
         domain.callMember("enter");
     }
 
     public void exitDomain(ScriptObjectMirror domain) {
-        assert Thread.currentThread() == mainThread : "called from non-event thread " + Thread.currentThread().getName();
+        assertMainThread("exitDomain");
         domain.callMember("exit");
     }
 
