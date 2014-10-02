@@ -260,6 +260,10 @@ public final class EventLoop {
         }
     }
 
+    public void interrupt() {
+        interrupt(null);
+    }
+
     public void interrupt(final Consumer<Integer> callback) {
         interruptCallback = callback;
         interruptMainLoopHandle.send();
