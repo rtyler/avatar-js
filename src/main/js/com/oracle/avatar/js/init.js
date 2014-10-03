@@ -193,6 +193,99 @@ var gc = global.gc;
         console.log(this.stack);
     };
 
+    // emulate the v8 stack trace api
+    // https://bugs.openjdk.java.net/browse/JDK-8058285
+
+    var RuntimeException = Java.type('java.lang.RuntimeException');
+    var NashornException = Java.type('jdk.nashorn.api.scripting.NashornException');
+
+    var _wrapStackFrame = function(error, frame) {
+        var wrapped = {};
+        Object.defineProperty(wrapped, 'getThis', {
+            enumerable: true,
+            value: function() { return error; }
+        });
+        Object.defineProperty(wrapped, 'getTypeName', {
+            enumerable: true,
+            value: function() { return frame.getClassName(); }
+        });
+        Object.defineProperty(wrapped, 'getMethodName', {
+            enumerable: true,
+            value: function() { return frame.getMethodName(); }
+        });
+        Object.defineProperty(wrapped, 'getFileName', {
+            enumerable: true,
+            value: function() { return frame.getFileName(); }
+        });
+        Object.defineProperty(wrapped, 'getLineNumber', {
+            enumerable: true,
+            value: function() { return frame.getLineNumber(); }
+        });
+        Object.defineProperty(wrapped, 'isNative', {
+            enumerable: true,
+            value: function() { return frame.isNativeMethod(); }
+        });
+        Object.defineProperty(wrapped, 'toString', {
+            enumerable: true,
+            value: function() { return frame.toString(); }
+        });
+        Object.defineProperty(wrapped, 'getFunction', {
+            enumerable: true,
+            value: function() { return null; }
+        });
+        Object.defineProperty(wrapped, 'getFunctionName', {
+            enumerable: true,
+            value: function() { return frame.getMethodName(); }
+        });
+        Object.defineProperty(wrapped, 'getColumnNumber', {
+            enumerable: true,
+            value: function() { return 0; }
+        });
+        Object.defineProperty(wrapped, 'getEvalOrigin', {
+            enumerable: true,
+            value: function() { return null; } // see isEval
+        });
+        Object.defineProperty(wrapped, 'isTopLevel', {
+            enumerable: true,
+            value: function() { return false; } // the case for most frames
+        });
+        Object.defineProperty(wrapped, 'isEval', {
+            enumerable: true,
+            value: function() { return false; } // eval usage is rare these days
+        });
+        Object.defineProperty(wrapped, 'isConstructor', {
+            enumerable: true,
+            value: function() { return false; } // the case for most frames
+        });
+        return wrapped;
+    }
+
+    var _wrapStack = function(error, frames) {
+        var length = frames.length;
+        var end = length;
+        var start = 1; // skip first frame, new RuntimeException()
+        var limit = Error.stackTraceLimit;
+        if ((typeof limit) === 'number' && !isNaN(limit)) {
+            end = Math.max(length, limit + 1);
+        }
+        var wrappedFrames = [];
+        for (var i = start; i < end; i++) {
+            wrappedFrames.push(_wrapStackFrame(error, frames[i]));
+        }
+        return wrappedFrames;
+    }
+
+    var capture = Error.captureStackTrace;
+    Error.captureStackTrace = function(error) {
+        var exception = new RuntimeException();
+        if ((typeof Error.prepareStackTrace) == 'function') {
+            var frames = NashornException.getScriptFrames(exception);
+            error.stack = Error.prepareStackTrace(error, _wrapStack(error, frames));
+        } else {
+            error.stack = NashornException.getScriptStackString(exception);
+        }
+    }
+
     var fatalProcessing = function(er) {
         var caught = false;
         if (process.domain) { // From nodejs
