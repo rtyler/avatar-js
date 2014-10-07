@@ -278,11 +278,45 @@ var gc = global.gc;
     var capture = Error.captureStackTrace;
     Error.captureStackTrace = function(error) {
         var exception = new RuntimeException();
+        var frames = NashornException.getScriptFrames(exception);
         if ((typeof Error.prepareStackTrace) == 'function') {
-            var frames = NashornException.getScriptFrames(exception);
             error.stack = Error.prepareStackTrace(error, _wrapStack(error, frames));
         } else {
-            error.stack = NashornException.getScriptStackString(exception);
+            var stack = error.name + ': ' + error.message;
+            var length = frames.length;
+            if (length > 1) {
+                stack += '\n';
+            }
+            for (var i = 1; i < length; i++) { // skip first frame, new RuntimeException()
+                var st = frames[i];
+                var filename = st.getFileName();
+                if (filename.startsWith('/com/oracle/avatar/js/init.js')) {
+                    continue; // skip internal frames generated here
+                }
+                if (filename.startsWith('file:')) {
+                    filename = filename.substring(5); // strip leading 'file:' if present
+                }
+                if (filename.startsWith('jar:')) { // strip all leading paths for internal modules
+                    var slash = filename.lastIndexOf('/');
+                    if (slash > 0) {
+                        filename = filename.substring(slash + 1);
+                    }
+                }
+                if (filename === 'module.js') {
+                    continue; // skip internal frames in module.js
+                }
+                stack += '    at ';
+                stack += st.getMethodName();
+                stack += ' (';
+                stack += filename;
+                stack += ':';
+                stack += st.getLineNumber();
+                stack += ')';
+                if (i < length) {
+                    stack += '\n';
+                }
+            }
+            error.stack = stack;
         }
     }
 
