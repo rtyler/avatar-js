@@ -1,6 +1,6 @@
---- ../node/lib/http.js	2014-06-04 14:14:39.963752412 -0700
-+++ src/main/js/lib/http.js	2014-06-04 14:17:33.096035686 -0700
-@@ -1006,12 +1006,12 @@
+--- ../node/lib/http.js	2014-10-03 17:59:42.251608888 -0700
++++ src/main/js/lib/http.js	2014-10-06 10:50:53.171771946 -0700
+@@ -1010,12 +1010,12 @@
  OutgoingMessage.prototype._finish = function() {
    assert(this.connection);
    if (this instanceof ServerResponse) {
@@ -17,7 +17,7 @@
    }
    this.emit('finish');
  };
-@@ -1678,8 +1678,8 @@
+@@ -1682,8 +1682,8 @@
    }
  
  
@@ -28,7 +28,7 @@
    req.res = res;
    res.req = req;
  
-@@ -2055,8 +2055,8 @@
+@@ -2059,8 +2059,8 @@
      var res = new ServerResponse(req);
  
      res.shouldKeepAlive = shouldKeepAlive;
