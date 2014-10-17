@@ -30,9 +30,13 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import com.oracle.avatar.js.Loader;
 
 public class FileLogger implements Logger {
 
@@ -52,7 +56,7 @@ public class FileLogger implements Logger {
         this.logging = logging;
         this.enabled = true; // enabled by default
 
-        OutputStream os = null;
+        OutputStream os;
         try {
             // aesthetic - do not number the first instance
             final String fileName = name + (id == 0 ? "" : id) + ".log";
@@ -61,7 +65,15 @@ public class FileLogger implements Logger {
             // fallback to logging to stdout if we failed to create the log file
             os = System.out;
         }
-        writer = new PrintWriter(os);
+
+        OutputStreamWriter streamWriter;
+        try {
+            streamWriter = new OutputStreamWriter(os, Loader.UTF_8);
+        } catch (UnsupportedEncodingException ex) {
+            throw Loader.newUtf8UnsupportedError(ex);
+        }
+
+        writer = new PrintWriter(streamWriter);
         start = System.currentTimeMillis();
     }
 
@@ -119,6 +131,7 @@ public class FileLogger implements Logger {
     @Override
     protected void finalize() throws Throwable {
         close();
+        super.finalize();
     }
 
 }

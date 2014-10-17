@@ -32,6 +32,8 @@ import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Base64;
 
+import com.oracle.avatar.js.Loader;
+
 public final class Buffer {
 
     private static final String BASE64_ENCODING = "base64";
@@ -179,7 +181,7 @@ public final class Buffer {
     }
 
     public String toStringContent() {
-        return new String(array());
+        return Loader.utf8(array());
     }
 
     public String toStringContent(final Charset charset) {
@@ -617,7 +619,7 @@ public final class Buffer {
         default:
             bytes = str.getBytes(encoding);
         }
-        return bytes == null ? Buffer.EMPTY_BYTE_ARRAY : bytes;
+        return bytes;
     }
 
     private static boolean isEncoded(final String encoding) {

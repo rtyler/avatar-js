@@ -189,6 +189,7 @@ public abstract class CompressWriter extends Writer {
                             remainingOutput = fillBufferWithContent(buffer, outOffset, remainingOutput);
                             break;
                         }
+                        default: assert false : "case not handled: " + flush;
 
                     }
                 }

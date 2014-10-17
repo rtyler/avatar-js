@@ -45,10 +45,13 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 import java.util.concurrent.Callable;
 
 import javax.crypto.Cipher;
@@ -62,16 +65,14 @@ import javax.crypto.spec.DHParameterSpec;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
+import javax.net.ssl.SSLContext;
 
-import com.oracle.avatar.js.buffer.Buffer;
+import com.oracle.avatar.js.Loader;
 import com.oracle.avatar.js.buffer.Base64Decoder;
+import com.oracle.avatar.js.buffer.Buffer;
 import com.oracle.avatar.js.eventloop.Callback;
 import com.oracle.avatar.js.eventloop.Event;
 import com.oracle.avatar.js.eventloop.EventLoop;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-import javax.net.ssl.SSLContext;
 
 /**
  *
@@ -501,7 +502,7 @@ public final class Crypto {
         }
     }
 
-    public final class CipherJavaName {
+    public static class CipherJavaName {
 
         private final String name;
         private final String mode;
@@ -551,7 +552,7 @@ public final class Crypto {
         }
     }
 
-    public final class DH {
+    public static class DH {
 
         private final BigInteger g = BigInteger.valueOf(2);
         private final BigInteger p;
@@ -605,7 +606,7 @@ public final class Crypto {
         final SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
 
         final PBEKeySpec ks = new PBEKeySpec(password.toCharArray(),
-                salt.getBytes(), iteration, bytesLen * 8);
+                Loader.utf8(salt), iteration, bytesLen * 8);
         final SecretKey s = factory.generateSecret(ks);
         return new Buffer(s.getEncoded());
     }
@@ -743,9 +744,6 @@ public final class Crypto {
 
     public Mac newHmac(final String opensslName, final Buffer key) throws Exception {
         final String jname = getName(opensslName, HMAC_NAME_MAPPING);
-        if (jname == null) {
-            throw new IllegalArgumentException("Unsupported algorithm " + opensslName);
-        }
         final Mac mac = Mac.getInstance(jname);
         Buffer k = key;
         if (key.capacity() == 0) {
@@ -767,9 +765,6 @@ public final class Crypto {
 
     public MessageDigest newMessageDigest(final String opensslName) throws NoSuchAlgorithmException {
         final String jname = getName(opensslName, DIGEST_NAME_MAPPING);
-        if (jname == null) {
-            throw new IllegalArgumentException("Unsupported algorithm " + opensslName);
-        }
         final MessageDigest md = MessageDigest.getInstance(jname);
         return md;
     }

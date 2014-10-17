@@ -72,7 +72,7 @@ public class StringDecoder {
             nBuffer.flip();
             remaining = null;
         }
-        CoderResult res = decode(nBuffer);
+        decode(nBuffer);
         if (nBuffer.remaining() != 0) {
             // keep all that has not been read.
             remaining = ByteBuffer.allocate(nBuffer.remaining());
@@ -85,7 +85,7 @@ public class StringDecoder {
     }
 
     private CoderResult decode(ByteBuffer input) {
-        CoderResult res = null;
+        CoderResult res;
         out = CharBuffer.allocate(input.capacity());
         do {
             res = decoder.decode(input, out, true);

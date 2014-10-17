@@ -33,6 +33,7 @@ import java.nio.file.Paths;
 import java.security.AccessControlContext;
 import java.security.AccessController;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -200,7 +201,9 @@ public final class Server implements AutoCloseable {
         try {
             LibUV.disableStdioInheritance();
 
-            processAllArguments(args);
+            if (!processAllArguments(args)) {
+                return;
+            }
 
             if (holder.getForceRepl()) {
                 runREPL();
@@ -348,7 +351,7 @@ public final class Server implements AutoCloseable {
         }
     }
 
-    private void processAllArguments(String... args) {
+    private boolean processAllArguments(String... args) {
         if (args != null && args.length > 0) {
             for (int i = 0; i < args.length; i++) {
                 final String arg = args[i];
@@ -358,8 +361,7 @@ public final class Server implements AutoCloseable {
 
                     // argument to -p and --print is optional
                     if (isEval && i + 1 >= args.length) {
-                        System.err.println("Error: " + arg + " requires an argument\n");
-                        System.exit(0);
+                        throw new Error("arg '" + arg + "' requires an argument\n");
                     }
 
                     holder.setPrintEval(holder.getPrintEval() || isPrint);
@@ -405,13 +407,14 @@ public final class Server implements AutoCloseable {
             log.log("avatar args " + avatarArgs);
             log.log("user file " + userFile);
             log.log("user args " + userArgs);
-            processArgs(avatarArgs);
+            return processArgs(avatarArgs);
         } else {
             holder.setForceRepl(true);
         }
+        return true;
     }
 
-    private void processArgs(final List<String> args) {
+    private boolean processArgs(final List<String> args) {
         boolean dumpHelp = false;
         boolean dumpVersion = false;
         boolean dumpUVVersion = false;
@@ -442,20 +445,21 @@ public final class Server implements AutoCloseable {
 
         if (dumpVersion) {
             System.out.println("v" + version);
-            System.exit(0);
+            return false;
         }
         if (dumpUVVersion) {
             System.out.println("v" + uvVersion);
-            System.exit(0);
+            return false;
         }
         if (dumpHelp) {
             System.out.println(HELP);
-            System.exit(0);
+            return false;
         }
         if (unknownArg != null) {
-            System.err.println("Error: unrecognized flag " + unknownArg + "\n" +
+            throw new Error("unrecognized flag " + unknownArg + "\n" +
                                "Try --help for options");
         }
+        return true;
     }
 
     private Object eval(final String fileName, final URL url,
@@ -526,7 +530,7 @@ public final class Server implements AutoCloseable {
         }
     }
 
-    public final class SecureHolder {
+    public static final class SecureHolder {
 
         private final EventLoop evtloop;
         private final Loader loader;
@@ -569,21 +573,21 @@ public final class Server implements AutoCloseable {
         }
 
         private void setArgs(final String[] avatarArgs, final String[] userArgs, final String[] userFiles) {
-            this.avatarArgs = avatarArgs != null ? avatarArgs.clone() : null;
-            this.userArgs = userArgs != null ? userArgs.clone() : null;
-            this.userFiles = userFiles != null ? userFiles.clone() : null;
+            this.avatarArgs = avatarArgs;
+            this.userArgs = userArgs;
+            this.userFiles = userFiles;
         }
 
         public String[] getAvatarArgs() {
-            return avatarArgs;
+            return avatarArgs == null ? null : Arrays.copyOf(avatarArgs, avatarArgs.length);
         }
 
         public String[] getUserArgs() {
-            return userArgs;
+            return userArgs == null ? null : Arrays.copyOf(userArgs, userArgs.length);
         }
 
         public String[] getUserFiles() {
-            return userFiles;
+            return userFiles == null ? null : Arrays.copyOf(userFiles, userFiles.length);
         }
 
         private void setThrowDeprecation(boolean throwDeprecation) {

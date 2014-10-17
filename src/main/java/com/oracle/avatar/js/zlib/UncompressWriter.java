@@ -50,7 +50,7 @@ public abstract class UncompressWriter extends Writer {
      * (chunks) This InputStream creates a continuous stream on top of
      * chunks. XXX jfdenise: WARNING: WHAT ABOUT PERFORMANCE? HOW TO PROPERLY SUBCLASS InpuStream.
      */
-    private class ChunkInputStream extends InputStream {
+    private static final class ChunkInputStream extends InputStream {
 
         private ByteArrayInputStream bi;
         private boolean empty = true;
@@ -219,6 +219,7 @@ public abstract class UncompressWriter extends Writer {
                         }
                         break;
                     }
+                    default: assert false : "case not handled: " + flush;
                 }
 
                 callback(callback, remainingInput, remainingOutput);

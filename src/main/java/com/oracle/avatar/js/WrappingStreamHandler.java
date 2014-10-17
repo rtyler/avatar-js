@@ -41,7 +41,7 @@ import java.net.URLStreamHandler;
  * <li>avatar:jar:file:{path to script file inside jar file}</li>
  * </ul>
  */
-public class WrappingStreamHandler extends URLStreamHandler {
+public final class WrappingStreamHandler extends URLStreamHandler {
 
     private static final class ContentWrapper {
 
@@ -84,8 +84,9 @@ public class WrappingStreamHandler extends URLStreamHandler {
     }
 
     protected static final class WrapperInputStream extends InputStream {
-        private static final byte[] WRAP_PREFIX = Loader.PREFIX.getBytes();
-        private static final byte[] WRAP_SUFFIX = Loader.SUFFIX.getBytes();
+
+        private static final byte[] WRAP_PREFIX = Loader.utf8(Loader.PREFIX);
+        private static final byte[] WRAP_SUFFIX = Loader.utf8(Loader.SUFFIX);
         private static final int WRAP_LENGTH = WRAP_PREFIX.length + WRAP_SUFFIX.length;
 
         private final ContentWrapper prefix = new ContentWrapper(WRAP_PREFIX);
@@ -141,7 +142,8 @@ public class WrappingStreamHandler extends URLStreamHandler {
         }
     }
 
-    private final class WrappedURLConnection extends URLConnection {
+    private static final class WrappedURLConnection extends URLConnection {
+
         private final URLConnection wrapped;
 
         WrappedURLConnection(final URL url, final URLConnection wrapped) {

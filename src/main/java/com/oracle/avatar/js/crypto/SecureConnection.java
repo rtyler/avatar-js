@@ -30,27 +30,28 @@ import java.security.cert.Certificate;
 import java.security.cert.CertificateParsingException;
 import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAPublicKey;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.ArrayList;
 
+import javax.net.ssl.ExtendedSSLSession;
 import javax.net.ssl.SNIHostName;
 import javax.net.ssl.SNIServerName;
-import javax.net.ssl.SSLParameters;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLEngine;
 import javax.net.ssl.SSLEngineResult;
 import javax.net.ssl.SSLEngineResult.HandshakeStatus;
 import javax.net.ssl.SSLEngineResult.Status;
 import javax.net.ssl.SSLException;
+import javax.net.ssl.SSLParameters;
 import javax.net.ssl.SSLSession;
-import javax.net.ssl.ExtendedSSLSession;
 
 import com.oracle.avatar.js.buffer.Buffer;
-import com.oracle.avatar.js.eventloop.Callback;
 import com.oracle.avatar.js.buffer.HexUtils;
+import com.oracle.avatar.js.eventloop.Callback;
 import com.oracle.avatar.js.eventloop.EventLoop;
 import com.oracle.avatar.js.log.Logger;
 
@@ -485,9 +486,8 @@ public class SecureConnection {
                 return null;
             }
         }
-        assert certs != null && certs.length != 0;
         if (certs == null || certs.length == 0) {
-            throw new Exception("Secure Context not established");
+            throw new SSLException("Secure Context not established");
         }
         final Certificate pc = certs[0];
         PeerCertificate peerC = null;
@@ -921,7 +921,7 @@ public class SecureConnection {
                 if(before && !after) {
                     LOG.log("unwrap, handshake renegociation");
                     isRenegotiating = true;
-                    onRenegoStart.call("renegotiation.start", null);
+                    onRenegoStart.call("renegotiation.start", Collections.emptyList().toArray());
                 }
             } while (res.getStatus() == SSLEngineResult.Status.OK
                     && res.getHandshakeStatus() == SSLEngineResult.HandshakeStatus.NEED_UNWRAP
@@ -980,6 +980,7 @@ public class SecureConnection {
                 incomingFromPeer = handleBufferUnderFlow(sslEngine.getSession().getPacketBufferSize(), incomingFromPeer);
                 break;
             }
+            default: assert false : "unhandled case " + res.getStatus();
         }
         return readLength;
     }

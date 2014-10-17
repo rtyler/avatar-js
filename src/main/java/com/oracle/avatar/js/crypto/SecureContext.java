@@ -26,9 +26,12 @@
 package com.oracle.avatar.js.crypto;
 
 import java.io.ByteArrayInputStream;
+import java.net.Socket;
 import java.security.Key;
 import java.security.KeyFactory;
 import java.security.KeyStore;
+import java.security.Principal;
+import java.security.PrivateKey;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
@@ -42,28 +45,26 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.net.Socket;
-import java.security.Principal;
-import java.security.PrivateKey;
-import javax.net.ssl.ExtendedSSLSession;
-import javax.net.ssl.SNIHostName;
-import javax.net.ssl.SNIServerName;
-import javax.net.ssl.SSLEngine;
-import javax.net.ssl.SSLSession;
-import javax.net.ssl.X509ExtendedKeyManager;
+import java.util.Random;
+
 import javax.crypto.EncryptedPrivateKeyInfo;
+import javax.net.ssl.ExtendedSSLSession;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SNIHostName;
+import javax.net.ssl.SNIServerName;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLEngine;
+import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl.X509ExtendedKeyManager;
 import javax.net.ssl.X509TrustManager;
 
 import com.oracle.avatar.js.buffer.Base64Decoder;
 import com.oracle.avatar.js.buffer.Buffer;
 import com.oracle.avatar.js.eventloop.Callback;
 import com.oracle.avatar.js.log.Logger;
-import java.util.Random;
 
 /**
  * Instance of this class contains the information required to build an SSLContext.
@@ -181,7 +182,7 @@ public final class SecureContext {
         public PrivateKey getPrivateKey(String alias) {
             PrivateKey pk = sniPrivateKeys.remove(alias);
             LOG.log("SNI getPrivateKey " + alias +
-                    ", pkey " + pk == null ? "null" : "pkey");
+                    ", pkey " + (pk == null ? "null" : "pkey"));
             if (pk != null) {
                 return pk;
             } else {

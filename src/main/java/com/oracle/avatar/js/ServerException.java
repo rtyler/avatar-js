@@ -26,8 +26,11 @@
 package com.oracle.avatar.js;
 
 import java.io.PrintStream;
-import jdk.nashorn.api.scripting.NashornException;
+import java.util.Arrays;
+
 import com.oracle.libuv.NativeException;
+
+import jdk.nashorn.api.scripting.NashornException;
 
 /**
  * An exception that filter-out internal frames of the original Exception.
@@ -38,7 +41,7 @@ import com.oracle.libuv.NativeException;
  * are not filtered out. The cause of this exception is the originally thrown
  * exception.
  */
-public final class ServerException extends Throwable {
+public final class ServerException extends Exception {
 
     private static final long serialVersionUID = 8930713476760671228L;
 
@@ -69,7 +72,7 @@ public final class ServerException extends Throwable {
 
     @Override
     public StackTraceElement[] getStackTrace() {
-        return elems;
+        return Arrays.copyOf(elems, elems.length);
     }
 
     @Override

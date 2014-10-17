@@ -28,11 +28,13 @@ package com.oracle.avatar.js;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLStreamHandler;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
 
@@ -40,6 +42,7 @@ import java.util.Set;
  * An extensible module loader.
  */
 public abstract class Loader {
+
     public static final String PREFIX = "(function (exports, require, module, __filename, __dirname) {";
     public static final String SUFFIX = "\n});";
 
@@ -69,6 +72,26 @@ public abstract class Loader {
 
     public static final String SCRIPT_EXTENSION = ".js";
     public static final String UTF_8 = "UTF-8";
+
+    public static Error newUtf8UnsupportedError(final UnsupportedEncodingException ex) {
+        return new Error("FATAL: utf-8 not supported by platform", ex);
+    }
+
+    public static byte[] utf8(final String str) {
+        try {
+            return Objects.requireNonNull(str).getBytes(UTF_8);
+        } catch (UnsupportedEncodingException ex) {
+            throw newUtf8UnsupportedError(ex);
+        }
+    }
+
+    public static String utf8(final byte[] bytes) {
+        try {
+            return new String(Objects.requireNonNull(bytes), UTF_8);
+        } catch (UnsupportedEncodingException ex) {
+            throw newUtf8UnsupportedError(ex);
+        }
+    }
 
     /**
      * Tests whether the specified module is available from
@@ -122,9 +145,8 @@ public abstract class Loader {
          * Constructor.
          */
         public Core() {
-            final InputStream is = Core.class.getResourceAsStream(PROPERTIES_PATH);
-            assert null != is;
-            try {
+            try (final InputStream is = Core.class.getResourceAsStream(PROPERTIES_PATH)) {
+                assert null != is;
                 BUILD_PROPERTIES.load(is);
             } catch (final IOException ex) {
                 if (Server.assertions()) {
