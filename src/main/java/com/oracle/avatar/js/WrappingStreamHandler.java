@@ -41,7 +41,7 @@ import java.net.URLStreamHandler;
  * <li>avatar:jar:file:{path to script file inside jar file}</li>
  * </ul>
  */
-public final class WrappingStreamHandler extends URLStreamHandler {
+public class WrappingStreamHandler extends URLStreamHandler {
 
     private static final class ContentWrapper {
 
