@@ -479,7 +479,7 @@ public final class Server implements AutoCloseable {
         checkPermission();
         final String[] options = new String[] {
                 "-scripting", // shebangs in modules
-                "--const-as-var" // until const is fully supported
+                "--language=es6" // for let, const etc
         };
         try {
             return ENGINE_FACTORY.getScriptEngine(options);
@@ -487,7 +487,23 @@ public final class Server implements AutoCloseable {
             // fallback to default if any of the specified options are not supported
             // this happens for example when running on an earlier release
             // --const-as-var was available starting in jdk 8u20
-            return ENGINE_FACTORY.getScriptEngine();
+            // --language=es6 was available starting in jdk 8u40
+            final String[] fallback = new String[] {
+                    "-scripting", // shebangs in modules
+                    "--const-as-var" // until const is fully supported
+            };
+            try {
+                return ENGINE_FACTORY.getScriptEngine(fallback);
+            } catch (IllegalArgumentException iae2) {
+                final String[] failsafe = new String[] {
+                        "-scripting", // shebangs in modules
+                };
+                try {
+                    return ENGINE_FACTORY.getScriptEngine(failsafe);
+                } catch (IllegalArgumentException iae3) {
+                    return ENGINE_FACTORY.getScriptEngine();
+                }
+            }
         }
     }
 
