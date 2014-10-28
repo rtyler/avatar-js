@@ -117,12 +117,12 @@ public final class Crypto {
     private static final String RSA = "RSA";
     private static final String WITH = "with";
 
-    private final Map<String, CipherJavaName> CIPHER_NAME_MAPPING = new HashMap<>();
-    private final Map<String, String> DIGEST_NAME_MAPPING = new HashMap<>();
-    private final Map<String, String> HMAC_NAME_MAPPING = new HashMap<>();
-    private final Map<String, String> SIGN_NAME_MAPPING = new HashMap<>();
+    private static final Map<String, CipherJavaName> CIPHER_NAME_MAPPING = new HashMap<>();
+    private static final Map<String, String> DIGEST_NAME_MAPPING = new HashMap<>();
+    private static final Map<String, String> HMAC_NAME_MAPPING = new HashMap<>();
+    private static final Map<String, String> SIGN_NAME_MAPPING = new HashMap<>();
 
-    public Crypto(final EventLoop eventLoop) {
+    static {
         CIPHER_NAME_MAPPING.put("bf-cbc", new CipherJavaName(BF, CBC));
         CIPHER_NAME_MAPPING.put("bf", new CipherJavaName(BF, CBC));
         CIPHER_NAME_MAPPING.put("bf-cfb", new CipherJavaName(BF, CFB));
@@ -249,7 +249,9 @@ public final class Crypto {
         SIGN_NAME_MAPPING.put("rsa-sha256", SHA256 + WITH + RSA);
         SIGN_NAME_MAPPING.put("rsa-sha384", SHA256 + WITH + RSA);
         SIGN_NAME_MAPPING.put("rsa-sha512", SHA256 + WITH + RSA);
+    }
 
+    public Crypto(final EventLoop eventLoop) {
         this.eventLoop = eventLoop;
         this.LOG = eventLoop.logger("crypto");
     }
