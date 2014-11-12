@@ -376,6 +376,11 @@
                 <attribute name="Built-By" value="${user.name}"/>
                 <attribute name="Main-Class" value="com.oracle.avatar.js.Server"/>
             </manifest>
+            <metainf dir=".">
+                <include name="LICENSE"/>
+                <include name="THIRD_PARTY_README"/>
+                <include name="CONTRIBUTORS"/>
+            </metainf>
         </jar>
     </target>
 
