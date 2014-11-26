@@ -31,8 +31,7 @@
     <url>https://avatar-js.java.net/</url>
     <groupId>com.oracle</groupId>
     <artifactId>avatar-js</artifactId>
-    <version>1.0-SNAPSHOT</version>
-    <packaging>jar</packaging>
+    <!-- some properties to be specified on the command-line to the deploy:deploy-file goal -->
 
     <licenses>
         <license>
